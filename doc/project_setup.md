@@ -31,3 +31,48 @@ How to get started with your project.
   
 ### Basic Project Structure
 
+Getting more pieces in place
+
+1. initialize npm for your project
+  * npm init
+1. use npm to install rot.js
+  * add rot.js to package.json: npm install rot-js --save
+  * actually install the files in your project: npm install
+1. use npm to install webpack
+  * npm install webpack --save-dev
+  * NOTE: webpack is a tool to manage dependencies among your javascript files, which will become relevant later
+1. set up a webpack config file at the root level of your project
+  * ```
+// webpack.config.js
+module.exports = {
+  entry: './js/game.js',
+  output: {
+    filename: 'bundle.js'
+  }
+};```
+1. add bundle.js to your .gitignore file
+1. add babel to your project (tomorrow's javascript today)
+  * npm install babel-core babel-preset-env babel-loader --save-dev
+1. configure webpack to use babel
+  * ```// webpack.config.js
+module.exports = {
+  entry: './js/game.js',
+  output: {
+    filename: 'bundle.js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env']
+          }
+        }
+      }
+    ]
+  }
+};``` 
+1. 
