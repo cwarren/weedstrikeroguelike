@@ -29,7 +29,7 @@ How to get started with your project.
 1. get the work from you local repository back up to github
   1. git push origin master
   
-### Basic Project Structure
+### npm, webpack, and babel
 
 Getting more pieces in place
 
@@ -37,10 +37,9 @@ Getting more pieces in place
   * npm init
 1. use npm to install rot.js
   * add rot.js to package.json: npm install rot-js --save
-  * actually install the files in your project: npm install
 1. use npm to install webpack
   * npm install webpack --save-dev
-  * NOTE: webpack is a tool to manage dependencies among your javascript files, which will become relevant later
+    * NOTE: webpack is a tool to manage dependencies among your javascript files, which will become relevant later
 1. set up a webpack config file at the root level of your project
   * ```
 // webpack.config.js
@@ -50,11 +49,14 @@ module.exports = {
     filename: 'bundle.js'
   }
 };```
+    * that config means that when you run webpack it starts with js/index.js and handles all `require` and `import` stuff and puts the resulting assembled code in a file called bundle.js
+    * you can run webpack manually via `node_modules/.bin/webpack`, but there's a better way detailed below
 1. add bundle.js to your .gitignore file
 1. add babel to your project (tomorrow's javascript today)
   * npm install babel-core babel-preset-env babel-loader --save-dev
 1. configure webpack to use babel
-  * ```// webpack.config.js
+  * ```
+  // webpack.config.js
 module.exports = {
   entry: './js/game.js',
   output: {
@@ -74,5 +76,14 @@ module.exports = {
       }
     ]
   }
-};``` 
-1. 
+};```
+  * this means that any js that webpack handles is run through the babel transpiler, which allows you to write to current javascript (ecmascript) standards and have it converted to javascript code that will work in browsers that haven't caught up yet (which is essentially all of them). 
+1. add npm scripts to run webpack, and to have webpack watch for changes in your code and re-pack things as needed
+  * in package.json, alter the `scripts` section to include build and watch scripts:<br/>
+  ```
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --progress -p",
+    "watch": "webpack --progress --watch"
+  },```
+  * to use these scripts do `npm run {script name}` - e.g. `npm run build`
