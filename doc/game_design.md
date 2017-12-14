@@ -2,44 +2,17 @@
 
 ### Goals
 
-Weed Strike is a game that illustrates some programming and development patterns that cover the basic functionality of roguelikes. Notably:
-* having an evolving design document for the game
-  * goals/reasons
-  * narrative elements
-  * game play elements / mechanics
-    * fun factor
-* having an evolving project plan
-* choosing a deployment target (the web / a browser, in this case)
-* organizing the project file system
-* using the ROT.js library
-* implementing various game functionality
-  * game state
-  * display components
-  * command processing
-  * feedback / messages to player
-  * persistence of game state (i.e. save and load games)
-  * avatar
-  * map and navigation
-  * help system
-  * mobs
-  * timing / turn-taking
-  * combat
-  * mob AI
-  * items
-  * inventory
-* explore and implement various relevant programming patterns and concepts
-  * functions as values
-  * object oriented programming in javascript
-  * factories
-  * mixins
-  * serialization and deserialization
-  * procedural content generation
-  * event systems; observers and actors
-  * asynchronous actions and callbacks
-* be a viable, playable game
-  * fun
-  * relatively intuitive
-  * offers some emergent behavior
+Weed Strike is a fairly standard, simple roguelike. As such, the player gets
+* character advancement/progression (on the mechanics side of things, not necessarily the story side)
+  * some opponents that are too challenging to fight in the early stages of the game are easy to beat by the later stages of the game
+* inventory management
+* primary mob interactions are combat ('attack it' is never a bad choice from a story standpoint)
+  * some tactically interesting combat
+    * at the very least, players must make decisions about whether to fight or flee a given opponent
+* exploration (of procedurally generated content)
+* a simple framing story to engage the player and justify the avatar actions, but nothing to deep and little in the way of narrative progression
+* a final battle/goal
+* other standard roguelike experiences (permadeath, turn-based action, etc.)
   
 ### Story
 
