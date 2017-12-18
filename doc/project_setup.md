@@ -15,30 +15,38 @@ How to get started with your project.
   * e.g. /gits
 1. using a command-line-interface (e.g. terminal / shell), git clone your project into a sub-folder there
   * e.g. <br/>
-      cd /gits<br/>
-      git clone https://github.com/{your_github_username}/{your_project_repo_name}.git
+      `cd /gits`<br/>
+      `git clone https://github.com/{your_github_username}/{your_project_repo_name}.git`
 1. open your project folder in Atom
 1. create a new file at the root level of your project: .gitignore
   * add .DS_Store to the .gitignore file
   * add ASIDE* to the .gitignore file
   * save it
+1. set up basic folder structures and files
+  * NOTE: the files notes below can be empty for now, they just need to be there for git to pick up the folders, and you'll use those files later
+  * a folder `css`, with a file `style.css` in it
+  * a folder `doc`, with a file `project_plan.md` in it
+  * a folder `js_src`, with a file `game.js` in it
+  * a file `index.html`
 1. back at the command line add and commit your work
-  1. cd /gits/{your_project_repo_name}
-  1. git add .
-  1. git commit -m "a short note describing the work"
+  1. `cd /gits/{your_project_repo_name}`
+  1. `git add .`
+  1. `git commit -m "a short note describing the work"`
 1. get the work from you local repository back up to github
-  1. git push origin master
+  1. `git push origin master`
   
 ### npm, webpack, and babel
 
 Getting more pieces in place
 
 1. initialize npm for your project
-  * npm init
+  * `npm init`
+1. add node_modules to your .gitignore file
 1. use npm to install rot.js
-  * add rot.js to package.json: npm install rot-js --save
+  * add rot.js to package.json:<br/>
+    `npm install rot-js --save`
 1. use npm to install webpack
-  * npm install webpack --save-dev
+  * `npm install webpack --save-dev`
     * NOTE: webpack is a tool to manage dependencies among your javascript files, which will become relevant later
 1. set up a webpack config file at the root level of your project
   * ```
@@ -46,21 +54,21 @@ Getting more pieces in place
 module.exports = {
   entry: './js/game.js',
   output: {
-    filename: 'bundle.js'
+    filename: 'the_game.js'
   }
 };```
-    * that config means that when you run webpack it starts with js/index.js and handles all `require` and `import` stuff and puts the resulting assembled code in a file called bundle.js
+    * that config means that when you run webpack it starts with js/index.js and handles all `require` and `import` stuff and puts the resulting assembled code in a file called the_game.js
     * you can run webpack manually via `node_modules/.bin/webpack`, but there's a better way detailed below
-1. add bundle.js to your .gitignore file
+1. add the_game.js to your .gitignore file
 1. add babel to your project (tomorrow's javascript today)
-  * npm install babel-core babel-preset-env babel-loader --save-dev
+  * `npm install babel-cli babel-preset-env babel-loader --save-dev`
 1. configure webpack to use babel
   * ```
   // webpack.config.js
 module.exports = {
   entry: './js/game.js',
   output: {
-    filename: 'bundle.js'
+    filename: 'the_game.js'
   },
   module: {
     rules: [
@@ -83,7 +91,13 @@ module.exports = {
   ```
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --progress -p",
+    "build": "webpack --progress",
     "watch": "webpack --progress --watch"
-  },```
+  },
+  ```
   * to use these scripts do `npm run {script name}` - e.g. `npm run build`
+1. add this work to your git repo and commit it
+  1. `git add .`
+  1. `git commit -m "set up build tools- npm, webpack, babel"`
+
+  

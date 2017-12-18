@@ -1,9 +1,14 @@
+var webpack = require('webpack');
+
 // webpack.config.js
 module.exports = {
-  entry: './js/game.js',
+  entry: './js_src/game.js',
   output: {
-    filename: 'bundle.js'
+    filename: 'the_game.js'
   },
+  // plugins: [
+  //   new webpack.optimize.ModuleConcatenationPlugin()
+  // ],
   module: {
     rules: [
       {
