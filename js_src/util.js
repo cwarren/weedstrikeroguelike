@@ -1,7 +1,3 @@
-// require 'rot-js';
-
-module.exports = {
-  utilAlert: function() {
-    alert("this is a util function");
-  }
-};
+export function utilAlert() {
+  document.write("this is a util function<br/>");
+}

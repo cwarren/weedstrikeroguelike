@@ -100,4 +100,55 @@ module.exports = {
   1. `git add .`
   1. `git commit -m "set up build tools- npm, webpack, babel"`
 
-  
+
+### starter code
+
+Get something you can look at in your browser.
+
+1. set up your index.html file with some 'hello world code':
+```
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Your game title</title>
+    <script type="text/javascript" src="the_game.js"></script>
+  </head>
+  <body>
+    <p>hello world</p>
+  </body>
+</html>
+```
+1. set up your game.js file with enough to test the basic functionality of things:
+```
+import 'babel-polyfill';
+import {utilAlert} from './util.js';
+import ROT from 'rot-js';
+
+console.dir(ROT);
+
+document.write("ROT support status: "+ROT.isSupported()+"<br/>");
+
+let name = "Bob", time = "today";
+console.log(`Hello ${name}, how are you ${time}?`);
+
+utilAlert();
+```
+1. create a `util.js` file in your js_src folder and put a simple function in it for export:
+```
+export function utilAlert() {
+  document.write("this is a util function<br/>");
+}
+```
+1. do a build (i.e. use the build script you set up earlier)
+  * `npm run build`
+1. open index.html in your browser and verify that ROT is supported and your util function has been called.
+1. open your browser's javascript console to verify the 'Hello Bob' message is there.
+1. in Atom, open the_game.js and find the section that outputs the 'Hello Bob' message (e.g. search for 'Bob') and verify that the babel transpiling worked (compare what's there to what you put in js_src/game.js).
+  * ```
+  var name = "Bob",
+      time = "today";
+  console.log('Hello ' + name + ', how are you ' + time + '?');
+  ```
+ 
+ At the point the setup work for your project is done; your development environment and tools are ready to go and you can start working on your game.
+ 
