@@ -1,10 +1,18 @@
 import ROT from 'rot-js';
 import * as U from './util.js';
 import {Message} from './message.js';
+import {UIColor, UIModeStart, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
 
 export let Game = {
 
   messageHandler: Message,
+  
+  mode: {
+    start: '',
+    play: '',
+    win: '',
+    lose: ''
+  },
 
   _DISPLAY_SPACING: 1.1,
   _display: {
@@ -43,6 +51,11 @@ export let Game = {
     //   width: this.display.main.w,
     //   height: this.display.main.h,
     //   spacing: this.display.SPACING});
+    
+    this.mode.start = new UIModeStart(this);
+    this.mode.play = new UIModePlay(this);
+    this.mode.win = new UIModeWin(this);
+    this.mode.lose = new UIModeLose(this);
   },
 
   getDisplay: function (displayId) {
