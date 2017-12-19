@@ -7,12 +7,13 @@ export let Game = {
 
   messageHandler: Message,
   
-  mode: {
+  _mode: {
     start: '',
     play: '',
     win: '',
     lose: ''
   },
+  _curMode: '',
 
   _DISPLAY_SPACING: 1.1,
   _display: {
@@ -52,10 +53,12 @@ export let Game = {
     //   height: this.display.main.h,
     //   spacing: this.display.SPACING});
     
-    this.mode.start = new UIModeStart(this);
-    this.mode.play = new UIModePlay(this);
-    this.mode.win = new UIModeWin(this);
-    this.mode.lose = new UIModeLose(this);
+    this._mode.start = new UIModeStart(this);
+    this._mode.play = new UIModePlay(this);
+    this._mode.win = new UIModeWin(this);
+    this._mode.lose = new UIModeLose(this);
+    
+    this.switchMode('start');
   },
 
   getDisplay: function (displayId) {
@@ -79,14 +82,34 @@ export let Game = {
   },
 
   renderDisplayMain: function() {
-    let d = this._display.main.o;
-    for (let i = 0; i < 10; i++) {
-      d.drawText(5,i+5,"main");
+    this._display.main.o.clear();
+    if (this._curMode === null || this._curMode == '') {
+      return;
+    } else {
+      this._curMode.render();
     }
   },
   
   renderDisplayMessage: function() {
     this.messageHandler.render();
-  }
+  },
   
+  switchMode: function (newMode) {
+    if (typeof newMode == 'string' || newMode instanceof String) {
+      if (this._mode.hasOwnProperty(newMode)) {
+        newMode = this._mode[newMode];
+      } else {
+        return;
+      }
+    }
+
+    if (this._curMode !== null && this._curMode != '') {
+      this._curMode.exit();
+    }
+    this._curMode = newMode;
+    if (this._curMode !== null && this._curMode != '') {
+      this._curMode.enter();
+    }
+    this.render();
+  }
 };
