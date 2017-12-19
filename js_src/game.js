@@ -94,6 +94,20 @@ export let Game = {
     this.messageHandler.render();
   },
   
+  bindEvent: function(eventType) {
+    window.addEventListener(eventType, (evt) => {
+      this.eventHandler(eventType, evt);
+    });
+  },
+  
+  eventHandler: function (eventType, evt) {
+    // When an event is received have the current ui handle it
+    if (this._curMode !== null && this._curMode != '') {
+        this._curMode.handleInput(eventType, evt);
+        this.render();
+    }
+  },
+
   switchMode: function (newMode) {
     if (typeof newMode == 'string' || newMode instanceof String) {
       if (this._mode.hasOwnProperty(newMode)) {

@@ -16,8 +16,11 @@ window.onload = function() {
   document.getElementById('ws-avatar-display').appendChild(Game.getDisplay('avatar').getContainer());
   document.getElementById('ws-main-display').appendChild(Game.getDisplay('main').getContainer());
   document.getElementById('ws-message-display').appendChild(Game.getDisplay('message').getContainer());
-          
-  Game.render();
+
+  Game.bindEvent('keypress');
+  Game.bindEvent('keydown');
+
+  // Game.render();
   
   console.log("Game object:");
   console.dir(Game);
