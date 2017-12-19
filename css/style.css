@@ -1,0 +1,26 @@
+.ws-display {
+  padding: 4px;
+  background: #000;
+  float: left;
+}
+
+.dev-outline {
+  border: 1px solid red;
+  background: #500;
+}
+
+#ws-avatar-display {
+  padding-top: 8px;
+  padding-left: 8px;
+}
+
+#ws-main-display {
+  padding-top: 8px;
+}
+
+#ws-message-display {
+  clear: both;
+  margin-top: -4px;
+  padding-left: 8px;
+  padding-right: 12px;
+}

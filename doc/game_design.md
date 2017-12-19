@@ -32,3 +32,11 @@ The national arboretum has been enspelled by a particularly mischievous fairy. T
 
 ### Mechanics
 
+The game world operates on an 8-dir square grid. There are open spaces, through which entities can move, and blocked spaces (walls) which may not be entered.
+
+The player controls an avatar that moves in the world. The avatar is fundamentally the same as any other game entity (though with more abilities), except that it is controlled by a player rather than an AI. 
+
+Interaction between game entities usually happens by having one run into another. Doing so causes an action to occur between the two. Generally this action is for the active one to attack the other one.
+
+There is a final boss entity. If that entity is defeated then the player wins the game.
+
