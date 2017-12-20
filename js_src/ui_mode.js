@@ -1,3 +1,5 @@
+import ROT from 'rot-js';
+
 export let UIColor = {};
 UIColor.FG = '#fff';
 UIColor.BG = '#000';
@@ -22,7 +24,6 @@ class UIMode {
 
   static dumpInput(inputType,inputData) { 
     console.log(`inputType: ${inputType}`);
-    // console.dir(inputType);
     console.log('inputData:');
     console.dir(inputData);
   }
@@ -43,7 +44,9 @@ export class UIModeStart extends UIMode {
   }
 
   handleInput(inputType,inputData) {
-    super.handleInput(inputType,inputData);
+    if (inputData.charCode !== 0) { // ignore the various modding keys - control, shift, etc.
+      this.game.switchMode('play');
+    }
   }
 }
 
@@ -63,8 +66,18 @@ export class UIModePlay extends UIMode {
   }
 
   handleInput(inputType,inputData) {
-    super.handleInput(inputType,inputData);
+    // super.handleInput(inputType,inputData);
     this.game.messageHandler.send(`you pressed the ${String.fromCharCode(inputData.charCode)} key`);
+    if (inputType == 'keypress') {
+      if (inputData.keyCode == ROT.VK_ENTER || inputData.keyCode == ROT.VK_RETURN) {
+        this.game.switchMode('win');
+      }
+    }
+    else if (inputType == 'keydown') {
+      if (inputData.keyCode == ROT.VK_ESCAPE) {
+        this.game.switchMode('lose'); 
+      }
+    }
   }
 }
 

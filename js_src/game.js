@@ -3,6 +3,9 @@ import * as U from './util.js';
 import {Message} from './message.js';
 import {UIColor, UIModeStart, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
 
+console.log('ROT is:');
+console.dir(ROT);
+
 export let Game = {
 
   messageHandler: Message,
@@ -35,6 +38,9 @@ export let Game = {
   },
 
   init: function() {
+    console.log("Game object:");
+    console.dir(Game);  
+
     this._randomSeed = 5 + Math.floor(Math.random()*100000);
     //this._randomSeed = 76250;
     console.log("using random seed "+this._randomSeed);
@@ -48,10 +54,6 @@ export let Game = {
     }
   
     this.messageHandler.init(this.getDisplay('message'));
-    // this.display.main.o = new ROT.Display({
-    //   width: this.display.main.w,
-    //   height: this.display.main.h,
-    //   spacing: this.display.SPACING});
     
     this._mode.start = new UIModeStart(this);
     this._mode.play = new UIModePlay(this);
@@ -76,6 +78,7 @@ export let Game = {
 
   renderDisplayAvatar: function() {
     let d = this._display.avatar.o;
+    d.clear();
     for (let i = 0; i < 10; i++) {
       d.drawText(5,i+5,"avatar");
     }

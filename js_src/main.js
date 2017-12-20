@@ -3,7 +3,6 @@ import ROT from 'rot-js';
 import {Game} from './game.js';
 
 window.onload = function() {
-  console.log("starting WSRL - window loaded");
   // Check if rot.js can work on this browser
   if (!ROT.isSupported()) {
     alert("The rot.js library isn't supported by your browser.");
@@ -19,9 +18,4 @@ window.onload = function() {
 
   Game.bindEvent('keypress');
   Game.bindEvent('keydown');
-
-  // Game.render();
-  
-  console.log("Game object:");
-  console.dir(Game);
 };
