@@ -18,4 +18,5 @@ window.onload = function() {
 
   Game.bindEvent('keypress');
   Game.bindEvent('keydown');
+  Game.bindEvent('keyup');
 };

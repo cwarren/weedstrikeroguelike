@@ -1,7 +1,7 @@
 import ROT from 'rot-js';
 import * as U from './util.js';
 import {Message} from './message.js';
-import {UIColor, UIModeStart, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
+import {UIColor, UIModeStart, UIModePersistence, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
 
 console.log('ROT is:');
 console.dir(ROT);
@@ -12,6 +12,7 @@ export let Game = {
   
   _mode: {
     start: '',
+    persistence: '',
     play: '',
     win: '',
     lose: ''
@@ -56,6 +57,7 @@ export let Game = {
     this.messageHandler.init(this.getDisplay('message'));
     
     this._mode.start = new UIModeStart(this);
+    this._mode.persistence = new UIModePersistence(this);
     this._mode.play = new UIModePlay(this);
     this._mode.win = new UIModeWin(this);
     this._mode.lose = new UIModeLose(this);
