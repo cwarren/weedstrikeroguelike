@@ -32,7 +32,7 @@ class UIMode {
 //-----------------------------------------------------
 //-----------------------------------------------------
 
-export class UIModeStart extends UIMode {
+export class UIModeLaunch extends UIMode {
   enter() {
     super.enter();
     this.game.messageHandler.send("Welcome to WSRL");
@@ -40,7 +40,7 @@ export class UIModeStart extends UIMode {
   
   render() {
     this.display.drawText(1,1,"game start",UIColor.FG,UIColor.BG);
-    this.display.drawText(1,3,"press any key to play",UIColor.FG,UIColor.BG);
+    this.display.drawText(1,3,"press any key to continue",UIColor.FG,UIColor.BG);
   }
 
   handleInput(inputType,inputData) {
@@ -61,8 +61,13 @@ export class UIModePersistence extends UIMode {
   render() {
     this.display.drawText(1,1,"Game Control",UIColor.FG,UIColor.BG);
     this.display.drawText(5,3,"N - start a new game",UIColor.FG,UIColor.BG);
-    this.display.drawText(5,4,"S - save the current game",UIColor.FG,UIColor.BG);
-    this.display.drawText(5,5,"L - load the saved game",UIColor.FG,UIColor.BG);
+    if (this.game.isPlaying) {
+      this.display.drawText(5,4,"S - save the current game",UIColor.FG,UIColor.BG);
+      this.display.drawText(1,8,"[Escape] - cancel/return to play",UIColor.FG,UIColor.BG);
+    }
+    if (this.game.hasSaved) {
+      this.display.drawText(5,5,"L - load the saved game",UIColor.FG,UIColor.BG);
+    }
   }
 
   handleInput(inputType,inputData) {
@@ -74,17 +79,23 @@ export class UIModePersistence extends UIMode {
         this.game.switchMode('play');
       }
       else if (inputData.key == 's' || inputData.key == 'S') {
-        this.game.switchMode('play');
-        this.game.messageHandler.send("Game saved");
-        console.log("TODO: implement save game");
+        if (this.game.isPlaying) {
+          this.game.switchMode('play');
+          this.game.messageHandler.send("Game saved");
+          console.log("TODO: implement save game");
+        }
       }
       else if (inputData.key == 'l' || inputData.key == 'L') {
-        this.game.switchMode('play');
-        this.game.messageHandler.send("Game loaded");
-        console.log("TODO: implement load game");
+        if (this.game.hasSaved) {
+          this.game.switchMode('play');
+          this.game.messageHandler.send("Game loaded");
+          console.log("TODO: implement load game");
+        }
       }
       else if (inputData.key == 'Escape') {
-        this.game.switchMode('play'); 
+        if (this.game.isPlaying) {
+          this.game.switchMode('play');
+        }
       }
     }
   }
@@ -97,6 +108,7 @@ export class UIModePlay extends UIMode {
   enter() {
     super.enter();
     // this.game.messageHandler.clear();
+    this.game.isPlaying = true;
   }
   
   render() {
