@@ -69,9 +69,9 @@ export class UIModePersistence extends UIMode {
     // super.handleInput(inputType,inputData);
     if (inputType == 'keyup') {
       if (inputData.key == 'n' || inputData.key == 'N') {
-        this.game.switchMode('play');
+        this.game.startNewGame();
         this.game.messageHandler.send("New game started");
-        console.log("TODO: implement new game");
+        this.game.switchMode('play');
       }
       else if (inputData.key == 's' || inputData.key == 'S') {
         this.game.switchMode('play');

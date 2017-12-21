@@ -38,31 +38,39 @@ export let Game = {
     }
   },
 
+  _STATE: {},
+  
   init: function() {
     console.log("Game object:");
     console.dir(Game);  
 
-    this._randomSeed = 5 + Math.floor(Math.random()*100000);
-    //this._randomSeed = 76250;
-    console.log("using random seed "+this._randomSeed);
-    ROT.RNG.setSeed(this._randomSeed);
-
+    this._setupDisplays();    
+    this.messageHandler.init(this.getDisplay('message'));
+    this._setupUIModes();
+    
+    this.switchMode('start');
+  },
+  _setupDisplays: function() {
     for (var display_key in this._display) {
       this._display[display_key].o = new ROT.Display({
         width: this._display[display_key].w,
         height: this._display[display_key].h,
         spacing: this._DISPLAY_SPACING});
     }
-  
-    this.messageHandler.init(this.getDisplay('message'));
-    
+  },
+  _setupUIModes: function() {
     this._mode.start = new UIModeStart(this);
     this._mode.persistence = new UIModePersistence(this);
     this._mode.play = new UIModePlay(this);
     this._mode.win = new UIModeWin(this);
     this._mode.lose = new UIModeLose(this);
-    
-    this.switchMode('start');
+  },
+
+  startNewGame: function() {
+    this._STATE.randomSeed = 5 + Math.floor(Math.random()*100000);
+    //this._STATE._randomSeed = 76250;
+    console.log("using random seed "+this._STATE._randomSeed);
+    ROT.RNG.setSeed(this._STATE._randomSeed);
   },
 
   getDisplay: function (displayId) {
