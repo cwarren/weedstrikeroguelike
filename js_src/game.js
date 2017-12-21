@@ -39,6 +39,7 @@ export let Game = {
   },
 
   _STATE: {},
+  _PERSISTANCE_NAMESPACE: 'weedstrikegame',
 
   isPlaying: false,
   hasSaved: false,
@@ -142,5 +143,18 @@ export let Game = {
       this._curMode.enter();
     }
     this.render();
+  },
+  
+  persistSave: function() {
+    console.log("TODO: implement save game");    
+    this.messageHandler.send("Game saved");
+    this.hasSaved = true;
+  },
+  
+  persistRestore: function() {
+    console.log("TODO: implement load game");    
+    this.messageHandler.send("Game restored");
+    this.isP = true;
   }
+  
 };

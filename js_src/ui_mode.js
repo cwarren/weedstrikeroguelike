@@ -80,16 +80,16 @@ export class UIModePersistence extends UIMode {
       }
       else if (inputData.key == 's' || inputData.key == 'S') {
         if (this.game.isPlaying) {
+          this.game.persistSave();
+          console.log("TODO: storage access is async...? if so, don't switch to play until save is complete (research and use Promises)");
           this.game.switchMode('play');
-          this.game.messageHandler.send("Game saved");
-          console.log("TODO: implement save game");
         }
       }
       else if (inputData.key == 'l' || inputData.key == 'L') {
         if (this.game.hasSaved) {
+          this.game.persistRestore();
+          console.log("TODO: storage access is async...? if so, don't switch to play until load is complete (research and use Promises)");
           this.game.switchMode('play');
-          this.game.messageHandler.send("Game loaded");
-          console.log("TODO: implement load game");
         }
       }
       else if (inputData.key == 'Escape') {
@@ -99,6 +99,7 @@ export class UIModePersistence extends UIMode {
       }
     }
   }
+  
 }
 
 //-----------------------------------------------------
@@ -120,8 +121,8 @@ export class UIModePlay extends UIMode {
 
   handleInput(inputType,inputData) {
     // super.handleInput(inputType,inputData);
-    this.game.messageHandler.send(`you pressed the ${String.fromCharCode(inputData.charCode)} key`);
     if (inputType == 'keyup') {
+      this.game.messageHandler.send(`you pressed the ${String.fromCharCode(inputData.charCode)} key`);
       if (inputData.key == 'w') {
         this.game.switchMode('win');
       }
