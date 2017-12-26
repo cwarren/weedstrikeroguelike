@@ -1,9 +1,6 @@
 import ROT from 'rot-js';
-
-export let UIColor = {};
-UIColor.FG = '#fff';
-UIColor.BG = '#000';
-UIColor.DEFAULT = '%c{'+UIColor.FG+'}%b{'+UIColor.BG+'}';
+import {Map} from './map.js';
+import {Color} from './colors.js';
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -39,8 +36,8 @@ export class UIModeLaunch extends UIMode {
   }
   
   render() {
-    this.display.drawText(1,1,"game start",UIColor.FG,UIColor.BG);
-    this.display.drawText(1,3,"press any key to continue",UIColor.FG,UIColor.BG);
+    this.display.drawText(1,1,"game start",Color.FG,Color.BG);
+    this.display.drawText(1,3,"press any key to continue",Color.FG,Color.BG);
   }
 
   handleInput(inputType,inputData) {
@@ -59,14 +56,14 @@ export class UIModePersistence extends UIMode {
   }
   
   render() {
-    this.display.drawText(1,1,"Game Control",UIColor.FG,UIColor.BG);
-    this.display.drawText(5,3,"N - start a new game",UIColor.FG,UIColor.BG);
+    this.display.drawText(1,1,"Game Control",Color.FG,Color.BG);
+    this.display.drawText(5,3,"N - start a new game",Color.FG,Color.BG);
     if (this.game.isPlaying) {
-      this.display.drawText(5,4,"S - save the current game",UIColor.FG,UIColor.BG);
-      this.display.drawText(1,8,"[Escape] - cancel/return to play",UIColor.FG,UIColor.BG);
+      this.display.drawText(5,4,"S - save the current game",Color.FG,Color.BG);
+      this.display.drawText(1,8,"[Escape] - cancel/return to play",Color.FG,Color.BG);
     }
     if (this.game.hasSaved) {
-      this.display.drawText(5,5,"L - load the saved game",UIColor.FG,UIColor.BG);
+      this.display.drawText(5,5,"L - load the saved game",Color.FG,Color.BG);
     }
   }
 
@@ -143,10 +140,10 @@ export class UIModePlay extends UIMode {
   }
   
   render() {
-    this.display.drawText(1,1,"game play",UIColor.FG,UIColor.BG);
-    this.display.drawText(3,3,"'w' to win",UIColor.FG,UIColor.BG);
-    this.display.drawText(3,5,"'l' to lose",UIColor.FG,UIColor.BG);
-    this.display.drawText(1,9,"= - new game, save, or load",UIColor.FG,UIColor.BG);
+    this.display.drawText(1,1,"game play",Color.FG,Color.BG);
+    this.display.drawText(3,3,"'w' to win",Color.FG,Color.BG);
+    this.display.drawText(3,5,"'l' to lose",Color.FG,Color.BG);
+    this.display.drawText(1,9,"= - new game, save, or load",Color.FG,Color.BG);
   }
 
   handleInput(inputType,inputData) {
@@ -171,8 +168,8 @@ export class UIModePlay extends UIMode {
 
 export class UIModeWin extends UIMode {
   render() {
-    this.display.drawText(1,1,"game win",UIColor.FG,UIColor.BG);
-    this.display.drawText(1,3,"you WIN!!!",UIColor.FG,UIColor.BG);
+    this.display.drawText(1,1,"game win",Color.FG,Color.BG);
+    this.display.drawText(1,3,"you WIN!!!",Color.FG,Color.BG);
   }
 }
 
@@ -181,7 +178,7 @@ export class UIModeWin extends UIMode {
 
 export class UIModeLose extends UIMode {
   render() {
-    this.display.drawText(1,1,"game lose",UIColor.FG,UIColor.BG);
-    this.display.drawText(1,3,"you lose :(",UIColor.FG,UIColor.BG);
+    this.display.drawText(1,1,"game lose",Color.FG,Color.BG);
+    this.display.drawText(1,3,"you lose :(",Color.FG,Color.BG);
   }
 }

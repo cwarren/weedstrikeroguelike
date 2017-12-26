@@ -1,7 +1,7 @@
 import ROT from 'rot-js';
 import * as U from './util.js';
 import {Message} from './message.js';
-import {UIColor, UIModeLaunch, UIModePersistence, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
+import {UIModeLaunch, UIModePersistence, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
 
 console.log('ROT is:');
 console.dir(ROT);
