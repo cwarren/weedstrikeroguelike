@@ -145,16 +145,17 @@ export let Game = {
     this.render();
   },
   
-  persistSave: function() {
-    console.log("TODO: implement save game");    
-    this.messageHandler.send("Game saved");
-    this.hasSaved = true;
+  serialize: function() {
+    console.log("TODO: implement serialize game");    
+    var s = JSON.stringify(this._STATE);
+    return s;
   },
   
-  persistRestore: function() {
-    console.log("TODO: implement load game");    
-    this.messageHandler.send("Game restored");
-    this.isP = true;
+  deserialize: function(serializedGameState) {
+    console.log("TODO: implement deserialize game");    
+    // this.messageHandler.send("Game restored");
+    // this.isPlaying = true;
+    this._STATE = JSON.parse(serializedGameState);
   }
   
 };

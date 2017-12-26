@@ -80,16 +80,12 @@ export class UIModePersistence extends UIMode {
       }
       else if (inputData.key == 's' || inputData.key == 'S') {
         if (this.game.isPlaying) {
-          this.game.persistSave();
-          console.log("TODO: storage access is async...? if so, don't switch to play until save is complete (research and use Promises)");
-          this.game.switchMode('play');
+          this.handleSaveGame();
         }
       }
       else if (inputData.key == 'l' || inputData.key == 'L') {
         if (this.game.hasSaved) {
-          this.game.persistRestore();
-          console.log("TODO: storage access is async...? if so, don't switch to play until load is complete (research and use Promises)");
-          this.game.switchMode('play');
+          this.handleRestoreGame();
         }
       }
       else if (inputData.key == 'Escape') {
@@ -100,6 +96,40 @@ export class UIModePersistence extends UIMode {
     }
   }
   
+  handleSaveGame() {
+    if (! this.localStorageAvailable()) {
+      return;
+    }
+    let serializedGameState = this.game.serialize();
+    window.localStorage.setItem(this.game._PERSISTANCE_NAMESPACE,serializedGameState);
+    this.game.hasSaved = true;
+    this.game.messageHandler.send("Game saved");
+    this.game.switchMode('play');
+  }
+  
+  handleRestoreGame() {
+    if (! this.localStorageAvailable()) {
+      return;
+    }
+    let serializedGameState = window.localStorage.getItem(this.game._PERSISTANCE_NAMESPACE);
+    this.game.deserialize(serializedGameState);
+    this.game.messageHandler.send("Game loaded");
+    this.game.switchMode('play');
+  }
+  
+  localStorageAvailable() { 
+    // NOTE: see https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+    try {
+      var x = '__storage_test__';
+      window.localStorage.setItem( x, x);
+      window.localStorage.removeItem(x);
+      return true;
+    }
+    catch(e) {
+      this.game.messageHandler.send('Sorry, no local data storage is available for this browser so game save/load is not possible');
+      return false;
+    }
+  }
 }
 
 //-----------------------------------------------------
