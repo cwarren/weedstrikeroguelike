@@ -17,6 +17,10 @@ export class Tile {
   drawOn(display, dispX, dispY) {
     this._symbol.drawOn(display, dispX, dispY);
   }
+  
+  isA(matchingTile) {
+    return this.getName() == matchingTile.getName();
+  }
 }
 
 export let TILES = {

@@ -17,18 +17,26 @@ export class Map {
   getYDim() { return this.ydim; }
   getTile(x,y) {
     if ((x < 0) || (x >= this.xdim) || (y<0) || (y >= this.ydim)) {
-      return Game.Tile.nullTile;
+      return TILES.NULLTILE;
     }
     return this.tileGrid[x][y] || TILES.NULLTILE;
   }
   
-  renderOn(display) {
+  renderOn(display, camX, camY) {
+    let o = display.getOptions();
+    let xStart = camX-Math.round(o.width/2);
+    let yStart = camY-Math.round(o.height/2);   
     for (let x=0;x<this.xdim;x++) {
       for (let y=0;y<this.ydim;y++) {
-        this.getTile(x,y).drawOn(display,x,y);
+        let tile = this.getTile(x+xStart, y+yStart);
+        if (tile.isA(TILES.NULLTILE)) {
+          tile = TILES.WALL;
+        }
+        tile.drawOn(display,x,y);
       }      
     }
   }
+  
 }
 
 let TILE_GRID_GENERATORS = {
@@ -36,7 +44,7 @@ let TILE_GRID_GENERATORS = {
     let tg = init2DArray(xdim,ydim,TILES.NULLTILE);
     let gen = new ROT.Map.Cellular(xdim, ydim, { connected: true });
     gen.randomize(.49);
-    for(var i=3;i>=0;i--) {
+    for(let i=3;i>=0;i--) {
       gen.create();
       // set the boundary to all wall each pass
       for (let x=0;x<xdim;x++) {

@@ -156,7 +156,7 @@ export class UIModePlay extends UIMode {
   }
   
   render() {
-    this._STATE.curMap.renderOn(this.display);
+    this._STATE.curMap.renderOn(this.display,this._STATE.cameraLoc.x,this._STATE.cameraLoc.y);
     this.avatarSymbol.drawOn(this.display,this._STATE.cameraLoc.x,this._STATE.cameraLoc.y);
     // this.display.drawText(1,1,"game play",Color.FG,Color.BG);
     // this.display.drawText(3,3,"'w' to win",Color.FG,Color.BG);
