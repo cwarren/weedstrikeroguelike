@@ -1,6 +1,7 @@
 import ROT from 'rot-js';
 import {Map} from './map.js';
 import {Color} from './colors.js';
+import {DisplaySymbol} from './display_symbol.js';
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -42,11 +43,9 @@ export class UIModeLaunch extends UIMode {
   }
 
   handleInput(inputType,inputData) {
-    if (inputType == 'keypress') {
-      console.dir(inputData);
-      if (inputData.charCode !== 0) { // ignore the various modding keys - control, shift, etc.
-        this.keyPressGate = true;
-      }
+    if (inputType == 'keypress' && inputData.charCode !== 0) { 
+                                   // ignore the various modding keys - control, shift, etc.
+      this.keyPressGate = true;
     }
     if (inputType == 'keyup' && this.keyPressGate) {
       this.game.switchMode('persistence');
@@ -144,13 +143,21 @@ export class UIModePlay extends UIMode {
     super.enter();
     // this.game.messageHandler.clear();
     this.game.isPlaying = true;
-    if (! this.curMap || this.curMap === undefined) {
-      this.curMap = new Map(60,20);
-    }
+    this.avatarSymbol = new DisplaySymbol('@','#dd4');
+  }
+  
+  startNewGame() {
+    this._STATE = {};
+    this._STATE.curMap = new Map(160,80);
+    this._STATE.cameraLoc = {
+      x: Math.round(this._STATE.curMap.getXDim()/2),
+      y: Math.round(this._STATE.curMap.getYDim()/2)
+    };
   }
   
   render() {
-    this.curMap.renderOn(this.display);
+    this._STATE.curMap.renderOn(this.display);
+    this.avatarSymbol.drawOn(this.display,this._STATE.cameraLoc.x,this._STATE.cameraLoc.y);
     // this.display.drawText(1,1,"game play",Color.FG,Color.BG);
     // this.display.drawText(3,3,"'w' to win",Color.FG,Color.BG);
     // this.display.drawText(3,5,"'l' to lose",Color.FG,Color.BG);

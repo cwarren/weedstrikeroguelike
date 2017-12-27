@@ -13,6 +13,8 @@ export class Map {
     this.id = randomString();
   }
   
+  getXDim() { return this.xdim; }
+  getYDim() { return this.ydim; }
   getTile(x,y) {
     if ((x < 0) || (x >= this.xdim) || (y<0) || (y >= this.ydim)) {
       return Game.Tile.nullTile;

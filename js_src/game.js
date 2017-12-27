@@ -76,6 +76,7 @@ export let Game = {
     //this._STATE.randomSeed = 76250;
     console.log("using random seed "+this._STATE.randomSeed);
     ROT.RNG.setSeed(this._STATE.randomSeed);
+    this._mode.play.startNewGame();
   },
 
   getDisplay: function (displayId) {
