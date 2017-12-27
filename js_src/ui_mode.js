@@ -143,31 +143,31 @@ export class UIModePlay extends UIMode {
     super.enter();
     // this.game.messageHandler.clear();
     this.game.isPlaying = true;
-    this.avatarSymbol = new DisplaySymbol('@','#dd4');
+    this.avatarSymbol = new DisplaySymbol('@','#ee1');
   }
   
   startNewGame() {
     this._STATE = {};
     this._STATE.curMap = new Map(160,80);
-    this._STATE.cameraLoc = {
+    this._STATE.cameraMapLoc = {
       x: Math.round(this._STATE.curMap.getXDim()/2),
       y: Math.round(this._STATE.curMap.getYDim()/2)
+    };
+    this._STATE.cameraDisplayLoc = {
+      x: Math.round(this.display.getOptions().width/2),
+      y: Math.round(this.display.getOptions().height/2)
     };
   }
   
   render() {
-    this._STATE.curMap.renderOn(this.display,this._STATE.cameraLoc.x,this._STATE.cameraLoc.y);
-    this.avatarSymbol.drawOn(this.display,this._STATE.cameraLoc.x,this._STATE.cameraLoc.y);
-    // this.display.drawText(1,1,"game play",Color.FG,Color.BG);
-    // this.display.drawText(3,3,"'w' to win",Color.FG,Color.BG);
-    // this.display.drawText(3,5,"'l' to lose",Color.FG,Color.BG);
-    // this.display.drawText(1,9,"= - new game, save, or load",Color.FG,Color.BG);
+    this._STATE.curMap.renderOn(this.display,this._STATE.cameraMapLoc.x,this._STATE.cameraMapLoc.y);
+    this.avatarSymbol.drawOn(this.display,this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
   }
 
   handleInput(inputType,inputData) {
     // super.handleInput(inputType,inputData);
     if (inputType == 'keyup') {
-      this.game.messageHandler.send(`you pressed the ${String.fromCharCode(inputData.charCode)} key`);
+      this.game.messageHandler.send(`you pressed the ${inputData.key} key`);
       if (inputData.key == 'w') {
         this.game.switchMode('win');
       }
@@ -177,7 +177,48 @@ export class UIModePlay extends UIMode {
       else if (inputData.key == '=') {
         this.game.switchMode('persistence');
       }
+      
+      // navigation (keeping in mind that top left is 0,0, so positive y moves you down)
+      else if (inputData.key == '1') {
+        this.moveBy(-1,1);
+      }
+      else if (inputData.key == '2') {
+        this.moveBy(0,1);
+      }
+      else if (inputData.key == '3') {
+        this.moveBy(1,1);
+      }
+      else if (inputData.key == '4') {
+        this.moveBy(-1,0);
+      }
+      else if (inputData.key == '5') {
+        // this.moveBy(0,0);
+      }
+      else if (inputData.key == '6') {
+        this.moveBy(1,0);
+      }
+      else if (inputData.key == '7') {
+        this.moveBy(-1,-1);
+      }
+      else if (inputData.key == '8') {
+        this.moveBy(0,-1);
+      }
+      else if (inputData.key == '9') {
+        this.moveBy(1,-1);
+      }
+      
     }
+  }
+
+  // (keeping in mind that top left is 0,0, so positive y moves you down)
+  moveBy(x,y) {
+    let newX = this._STATE.cameraMapLoc.x + x;
+    let newY = this._STATE.cameraMapLoc.y + y;
+    if (newX < 0 || newX > this._STATE.curMap.getXDim() - 1) { return; }
+    if (newY < 0 || newY > this._STATE.curMap.getYDim() - 1) { return; }
+    this._STATE.cameraMapLoc.x = newX;
+    this._STATE.cameraMapLoc.y = newY;
+    this.render();
   }
 }
 
