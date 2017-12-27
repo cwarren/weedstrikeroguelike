@@ -33,6 +33,7 @@ export class UIModeLaunch extends UIMode {
   enter() {
     super.enter();
     this.game.messageHandler.send("Welcome to WSRL");
+    this.keyPressGate = false;
   }
   
   render() {
@@ -41,7 +42,13 @@ export class UIModeLaunch extends UIMode {
   }
 
   handleInput(inputType,inputData) {
-    if (inputData.charCode !== 0) { // ignore the various modding keys - control, shift, etc.
+    if (inputType == 'keypress') {
+      console.dir(inputData);
+      if (inputData.charCode !== 0) { // ignore the various modding keys - control, shift, etc.
+        this.keyPressGate = true;
+      }
+    }
+    if (inputType == 'keyup' && this.keyPressGate) {
       this.game.switchMode('persistence');
     }
   }
@@ -137,13 +144,17 @@ export class UIModePlay extends UIMode {
     super.enter();
     // this.game.messageHandler.clear();
     this.game.isPlaying = true;
+    if (! this.curMap || this.curMap === undefined) {
+      this.curMap = new Map(60,20);
+    }
   }
   
   render() {
-    this.display.drawText(1,1,"game play",Color.FG,Color.BG);
-    this.display.drawText(3,3,"'w' to win",Color.FG,Color.BG);
-    this.display.drawText(3,5,"'l' to lose",Color.FG,Color.BG);
-    this.display.drawText(1,9,"= - new game, save, or load",Color.FG,Color.BG);
+    this.curMap.renderOn(this.display);
+    // this.display.drawText(1,1,"game play",Color.FG,Color.BG);
+    // this.display.drawText(3,3,"'w' to win",Color.FG,Color.BG);
+    // this.display.drawText(3,5,"'l' to lose",Color.FG,Color.BG);
+    // this.display.drawText(1,9,"= - new game, save, or load",Color.FG,Color.BG);
   }
 
   handleInput(inputType,inputData) {

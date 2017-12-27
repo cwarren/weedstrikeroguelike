@@ -73,9 +73,9 @@ export let Game = {
 
   startNewGame: function() {
     this._STATE.randomSeed = 5 + Math.floor(Math.random()*100000);
-    //this._STATE._randomSeed = 76250;
-    console.log("using random seed "+this._STATE._randomSeed);
-    ROT.RNG.setSeed(this._STATE._randomSeed);
+    //this._STATE.randomSeed = 76250;
+    console.log("using random seed "+this._STATE.randomSeed);
+    ROT.RNG.setSeed(this._STATE.randomSeed);
   },
 
   getDisplay: function (displayId) {
