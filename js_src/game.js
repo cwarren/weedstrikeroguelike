@@ -2,7 +2,7 @@ import ROT from 'rot-js';
 import * as U from './util.js';
 import {Message} from './message.js';
 import {UIModeLaunch, UIModePersistence, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
-// import {DATASTORE} from './datastore.js';
+import {DATASTORE, initializeDatastore} from './datastore.js';
 
 console.log('ROT is:');
 console.dir(ROT);
@@ -49,8 +49,8 @@ export let Game = {
     console.log("Game object:");
     console.dir(Game);  
 
-    // console.log("DATASTORE object:");
-    // console.dir(DATASTORE);  
+    console.log("DATASTORE object:");
+    console.dir(DATASTORE);  
 
     this._setupDisplays();
     this._setupUIModes();
@@ -76,6 +76,12 @@ export let Game = {
   },
 
   startNewGame: function() {
+    console.log("starting new game");
+    initializeDatastore();
+    DATASTORE.GAME = this;
+    console.log("datastore:");
+    console.dir(DATASTORE);
+
     this._STATE.randomSeed = 5 + Math.floor(Math.random()*100000);
     //this._STATE.randomSeed = 76250;
     console.log("using random seed "+this._STATE.randomSeed);
@@ -150,17 +156,13 @@ export let Game = {
     this.render();
   },
   
-  serialize: function() {
-    console.log("TODO: implement serialize game");    
+  toJSON: function() {
     var s = JSON.stringify(this._STATE);
     return s;
   },
   
-  deserialize: function(serializedGameState) {
-    console.log("TODO: implement deserialize game");    
-    // this.messageHandler.send("Game restored");
-    // this.isPlaying = true;
-    this._STATE = JSON.parse(serializedGameState);
+  fromJSON: function(json) {
+    this._STATE = JSON.parse(json);
   }
   
 };

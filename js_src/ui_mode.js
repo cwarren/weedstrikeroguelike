@@ -2,7 +2,7 @@ import ROT from 'rot-js';
 import {makeMap} from './map.js';
 import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
-import {DATASTORE} from './datastore.js';
+import {DATASTORE,initializeDatastore} from './datastore.js';
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -36,8 +36,6 @@ export class UIModeLaunch extends UIMode {
     super.enter();
     this.game.messageHandler.send("Welcome to WSRL");
     this.keyPressGate = false;
-    console.log("DATASTORE object:");
-    console.dir(DATASTORE);  
   }
   
   render() {
@@ -62,6 +60,9 @@ export class UIModeLaunch extends UIMode {
 export class UIModePersistence extends UIMode {
   enter() {
     super.enter();
+    if (window.localStorage.getItem(this.game._PERSISTANCE_NAMESPACE)) {
+      this.game.hasSaved = true;
+    }
   }
   
   render() {
@@ -106,8 +107,8 @@ export class UIModePersistence extends UIMode {
     if (! this.localStorageAvailable()) {
       return;
     }
-    let serializedGameState = this.game.serialize();
-    window.localStorage.setItem(this.game._PERSISTANCE_NAMESPACE,serializedGameState);
+    // let serializedGameState = this.game.serialize();
+    window.localStorage.setItem(this.game._PERSISTANCE_NAMESPACE,JSON.stringify(DATASTORE));
     this.game.hasSaved = true;
     this.game.messageHandler.send("Game saved");
     this.game.switchMode('play');
@@ -118,7 +119,23 @@ export class UIModePersistence extends UIMode {
       return;
     }
     let serializedGameState = window.localStorage.getItem(this.game._PERSISTANCE_NAMESPACE);
-    this.game.deserialize(serializedGameState);
+    let savedState = JSON.parse(serializedGameState);
+    
+    console.log("savedState");
+    console.dir(savedState);
+    
+    initializeDatastore();
+    
+    DATASTORE.GAME = this.game;
+    this.game.fromJSON(savedState.GAME);
+
+    for (let savedMapId in savedState.MAPS) {
+      makeMap(JSON.parse(savedState.MAPS[savedMapId]));
+    }
+
+    console.log("datastore:");
+    console.dir(DATASTORE);
+
     this.game.messageHandler.send("Game loaded");
     this.game.switchMode('play');
   }

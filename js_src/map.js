@@ -26,8 +26,10 @@ class Map {
   setId(newId) { this._attr.id = newId; }
   getRngBaseState() { return this._attr.rngBaseState; }
   setRngBaseState(newRngBaseState) { this._attr.rngBaseState = newRngBaseState; }
+  
   getXDim() { return this._attr.xdim; }
   getYDim() { return this._attr.ydim; }
+  
   getTile(x,y) {
     if ((x < 0) || (x >= this._attr.xdim) || (y<0) || (y >= this._attr.ydim)) {
       return TILES.NULLTILE;
@@ -50,6 +52,9 @@ class Map {
     }
   }
   
+  toJSON() {
+    return JSON.stringify(this._attr);
+  }
 }
 
 let TILE_GRID_GENERATORS = {
@@ -84,7 +89,6 @@ export function makeMap(mapData) {
   if (mapData.rngBaseState !== undefined) { m.setRngBaseState(mapData.rngBaseState); }
   m.setUp();
   
-  if (DATASTORE.MAPS === undefined) { DATASTORE.MAPS = {}; }
   DATASTORE.MAPS[m.getId()] = m;
   
   return m;
