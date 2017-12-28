@@ -2,6 +2,7 @@ import ROT from 'rot-js';
 import * as U from './util.js';
 import {Message} from './message.js';
 import {UIModeLaunch, UIModePersistence, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
+// import {DATASTORE} from './datastore.js';
 
 console.log('ROT is:');
 console.dir(ROT);
@@ -47,6 +48,9 @@ export let Game = {
   init: function() {
     console.log("Game object:");
     console.dir(Game);  
+
+    // console.log("DATASTORE object:");
+    // console.dir(DATASTORE);  
 
     this._setupDisplays();
     this._setupUIModes();

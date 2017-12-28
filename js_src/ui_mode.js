@@ -1,7 +1,8 @@
 import ROT from 'rot-js';
-import {Map} from './map.js';
+import {makeMap} from './map.js';
 import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
+import {DATASTORE} from './datastore.js';
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -35,6 +36,8 @@ export class UIModeLaunch extends UIMode {
     super.enter();
     this.game.messageHandler.send("Welcome to WSRL");
     this.keyPressGate = false;
+    console.log("DATASTORE object:");
+    console.dir(DATASTORE);  
   }
   
   render() {
@@ -148,10 +151,11 @@ export class UIModePlay extends UIMode {
   
   startNewGame() {
     this._STATE = {};
-    this._STATE.curMap = new Map(160,80);
+    let m = makeMap({xdim:60,ydim:20});
+    this._STATE.curMapId = m.getId();
     this._STATE.cameraMapLoc = {
-      x: Math.round(this._STATE.curMap.getXDim()/2),
-      y: Math.round(this._STATE.curMap.getYDim()/2)
+      x: Math.round(m.getXDim()/2),
+      y: Math.round(m.getYDim()/2)
     };
     this._STATE.cameraDisplayLoc = {
       x: Math.round(this.display.getOptions().width/2),
@@ -160,7 +164,8 @@ export class UIModePlay extends UIMode {
   }
   
   render() {
-    this._STATE.curMap.renderOn(this.display,this._STATE.cameraMapLoc.x,this._STATE.cameraMapLoc.y);
+    DATASTORE.MAPS[this._STATE.curMapId].renderOn(this.display,
+      this._STATE.cameraMapLoc.x,this._STATE.cameraMapLoc.y);
     this.avatarSymbol.drawOn(this.display,this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
   }
 
@@ -214,8 +219,8 @@ export class UIModePlay extends UIMode {
   moveBy(x,y) {
     let newX = this._STATE.cameraMapLoc.x + x;
     let newY = this._STATE.cameraMapLoc.y + y;
-    if (newX < 0 || newX > this._STATE.curMap.getXDim() - 1) { return; }
-    if (newY < 0 || newY > this._STATE.curMap.getYDim() - 1) { return; }
+    if (newX < 0 || newX > DATASTORE.MAPS[this._STATE.curMapId].getXDim() - 1) { return; }
+    if (newY < 0 || newY > DATASTORE.MAPS[this._STATE.curMapId].getYDim() - 1) { return; }
     this._STATE.cameraMapLoc.x = newX;
     this._STATE.cameraMapLoc.y = newY;
     this.render();
