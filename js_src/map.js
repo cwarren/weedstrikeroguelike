@@ -57,13 +57,21 @@ class Map {
     let yStart = camY-Math.round(o.height/2);   
     for (let x=0;x<this.attr.xdim;x++) {
       for (let y=0;y<this.attr.ydim;y++) {
-        let tile = this.getTile(x+xStart, y+yStart);
-        if (tile.isA(TILES.NULLTILE)) {
-          tile = TILES.WALL;
-        }
-        tile.drawOn(display,x,y);
+        this.getDisplaySymbolAtMapLocation(x+xStart, y+yStart).drawOn(display,x,y);
       }      
     }
+  }
+  
+  getDisplaySymbolAtMapLocation(mapX,mapY) {
+    // priority is: entity, tile
+    let entityId = this.attr.locationToEntityId[`${mapX},${mapY}`];
+    if (entityId) { return DATASTORE.ENTITIES[entityId]; }
+    
+    let tile = this.getTile(mapX, mapY);
+    if (tile.isA(TILES.NULLTILE)) {
+      tile = TILES.WALL;
+    }
+    return tile;
   }
   
   toJSON() {
