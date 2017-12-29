@@ -185,7 +185,7 @@ export class UIModePlay extends UIMode {
   startNewGame() {
     let a = EntityFactory.create('avatar');
     let m = makeMap({xdim:60,ydim:20});
-    a.setpos(m.getRandomWalkableOpenLocation());
+    a.setpos(m.getUnblockedPerimeterLocation());
     m.addEntity(a);
 
     this.attr = {};
@@ -252,9 +252,12 @@ export class UIModePlay extends UIMode {
 
   // (keeping in mind that top left is 0,0, so positive y moves you down)
   moveBy(x,y) {
-    DATASTORE.ENTITIES[this.attr.avatarId].moveBy(x,y);
-    this.syncCameraToAvatar();
-    this.render();
+    if (DATASTORE.ENTITIES[this.attr.avatarId].moveBy(x,y)) {
+      this.syncCameraToAvatar();
+      this.render();
+    } else {
+      this.game.messageHandler.send("you cannot move there");
+    }
   }
   
   syncCameraToAvatar() {

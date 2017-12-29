@@ -40,7 +40,7 @@ class Map {
     if ((x < 0) || (x >= this.attr.xdim) || (y<0) || (y >= this.attr.ydim)) {
       return false;
     }
-    if (this.attr.locationToEntityId[`${x},${y}`] || this.getTile(x,y).isImpassable()) {
+    if (this.testLocationBlocked(x,y)) {
       return false;
     }
     
@@ -51,14 +51,52 @@ class Map {
     return true;
   }
   
-  getRandomWalkableOpenLocation() {
+  getRandomUnblockedLocation() {
     let rx = Math.trunc(this.rng.getUniform()*this.attr.xdim);
     let ry = Math.trunc(this.rng.getUniform()*this.attr.ydim);
-    // console.log(`checking ${rx},${ry}`);
-    if (this.attr.locationToEntityId[`${rx},${ry}`] || this.getTile(rx,ry).isImpassable()) {
+    if (this.testLocationBlocked(rx,ry)) {
       return this.getRandomWalkableOpenLocation();
     }
     return {x: rx, y: ry};
+  }
+
+  // this mess finds an unblocked random space close to the map perimeter
+  getUnblockedPerimeterLocation(inset) {
+    inset = inset || 2;
+    let bounds = {
+      lx: inset,
+      ux: this.attr.xdim-1-inset,
+      ly: inset,
+      uy: this.attr.ydim-1-inset
+    };
+    let range = {
+      rx: this.attr.xdim-1-inset-inset,
+      ry: this.attr.ydim-1-inset-inset
+    };
+    let [x,y] = [0,0];
+    if (this.rng.getUniform() < .5) {
+      x = this.rng.getUniform() < .5 ? bounds.lx : bounds.ux;
+      y = Math.trunc(this.rng.getUniform() * range.ry);
+    } else {
+      x = Math.trunc(this.rng.getUniform() * range.rx);
+      y = this.rng.getUniform() < .5 ? bounds.ly : bounds.uy;
+    }
+    
+    let perimLen = range.rx * 2 + range.ry * 2 - 4;
+    for (let i=0; i<perimLen; i++) {
+      if (! this.testLocationBlocked(x,y)) {
+        return {'x': x, 'y': y};
+      }
+      if (y==bounds.ly && x < bounds.ux) { x++; continue; }
+      if (x==bounds.ux && y < bounds.uy) { y++; continue; }
+      if (y==bounds.uy && x > bounds.lx) { x--; continue; }
+      if (x==bounds.lx && y > bounds.ly) { y--; continue; }
+    }
+    return this.getUnblockedPerimeterLocation(inset+1);
+  }
+  
+  testLocationBlocked(x,y) {
+    return (this.attr.locationToEntityId[`${x},${y}`] || this.getTile(x,y).isImpassable());
   }
   
   getId() { return this.attr.id; }
