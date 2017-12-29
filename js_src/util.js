@@ -8,6 +8,12 @@ export function randomString(len = 8) {
     return res;
 }
 
+let ID_SEQ = 0;
+export function uniqueId() {
+  ID_SEQ++;
+  return `${ID_SEQ}-${randomString()}`;
+}
+
 export function init2DArray(x=1,y=1,initVal='') {
   var a = [];
   for (var xdim=0; xdim < x; xdim++) {

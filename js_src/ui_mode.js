@@ -3,6 +3,7 @@ import {makeMap} from './map.js';
 import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
 import {DATASTORE,initializeDatastore} from './datastore.js';
+import {EntityFactory} from './entities.js';
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -162,7 +163,7 @@ export class UIModePlay extends UIMode {
     super.enter();
     // this.game.messageHandler.clear();
     this.game.isPlaying = true;
-    this.avatarSymbol = new DisplaySymbol('@','#ee1');
+    this.avatar = EntityFactory.create('avatar');
   }
   
   startNewGame() {
@@ -182,7 +183,7 @@ export class UIModePlay extends UIMode {
   render() {
     DATASTORE.MAPS[this._STATE.curMapId].renderOn(this.display,
       this._STATE.cameraMapLoc.x,this._STATE.cameraMapLoc.y);
-    this.avatarSymbol.drawOn(this.display,this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
+    this.avatar.drawOn(this.display,this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
   }
 
   handleInput(inputType,inputData) {

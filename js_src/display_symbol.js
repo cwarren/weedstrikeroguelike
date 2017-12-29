@@ -1,10 +1,11 @@
 import {Color} from './colors.js';
 
 export class DisplaySymbol {
-  constructor(chr=' ',fgHexColor=Color.FG,bgHexColor=Color.BG) {
-    this._chr = chr;
-    this._fgHexColor = fgHexColor;
-    this._bgHexColor = bgHexColor;
+  constructor(template) {
+    // chr=' ',fgHexColor=Color.FG,bgHexColor=Color.BG) {
+    this._chr = template.chr || ' ';
+    this._fgHexColor = template.fg || Color.FG;
+    this._bgHexColor = template.bg || Color.BG;
   }
   
   getRepresentation() {

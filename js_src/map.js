@@ -1,5 +1,5 @@
 import ROT from 'rot-js';
-import {randomString,init2DArray} from './util.js';
+import {uniqueId,init2DArray} from './util.js';
 import {TILES} from './tile.js';
 import {DATASTORE} from './datastore.js';
 
@@ -12,7 +12,7 @@ class Map {
     this._attr.xdim = xdim;
     this._attr.ydim = ydim;
     this._attr.mapType = mapType;
-    this._attr.id = randomString();
+    this._attr.id = uniqueId();
     this.rng = ROT.RNG.clone();
     this._attr.rngBaseState = this.rng.getState();
   }
