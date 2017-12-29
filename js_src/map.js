@@ -88,6 +88,10 @@ class Map {
   toJSON() {
     return JSON.stringify(this.attr);
   }
+  
+  fromState(state) {
+    this.attr = state;
+  }
 }
 
 let TILE_GRID_GENERATORS = {
@@ -118,8 +122,11 @@ let TILE_GRID_GENERATORS = {
 
 export function makeMap(mapData) {
   let m = new Map(mapData.xdim, mapData.ydim, mapData.mapType);
-  if (mapData.id !== undefined) { m.setId(mapData.id); }
-  if (mapData.rngBaseState !== undefined) { m.setRngBaseState(mapData.rngBaseState); }
+  // if (mapData.id !== undefined) { m.setId(mapData.id); }
+  // if (mapData.rngBaseState !== undefined) { m.setRngBaseState(mapData.rngBaseState); }
+  if (mapData.id !== undefined) { 
+    m.fromState(mapData);
+  }
   m.setUp();
   
   DATASTORE.MAPS[m.getId()] = m;
