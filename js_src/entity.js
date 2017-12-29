@@ -1,16 +1,17 @@
 // a creature/mob in the game
 
+import {MixableSymbol} from './mixable_symbol.js';
 import {uniqueId} from './util.js';
 import {DATASTORE} from './datastore.js';
 
-export class Entity extends DisplaySymbol {
+export class Entity extends MixableSymbol {
   constructor(templateName, template) {
     super(template);
+    if (! ('attr' in this)) { this.attr = {}; }
     this.name = template.name || template.templateName || 'no name';
     this.descr = template.descr || 'boring';
 
     // NOTE: data in this.attr is persisted, and other object data is not (it's just re-created on load)
-    if (! ('attr' in this)) { this.attr = {}; }
     this.attr.id = uniqueId();
     this.attr.templateName = template.templateName;
     this.attr.x = template.x || 1;
