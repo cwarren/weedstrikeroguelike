@@ -40,6 +40,10 @@ class Map {
     if ((x < 0) || (x >= this.attr.xdim) || (y<0) || (y >= this.attr.ydim)) {
       return false;
     }
+    if (this.attr.locationToEntityId[`${x},${y}`] || this.getTile(x,y).isImpassable()) {
+      return false;
+    }
+    
     delete this.attr.locationToEntityId[e.getxcy()];
     e.setpos(x,y);
     this.attr.locationToEntityId[e.getxcy()] = e.getId();
