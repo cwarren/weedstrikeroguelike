@@ -26,6 +26,9 @@ class UIMode {
     console.log('inputData:');
     console.dir(inputData);
   }
+  
+  toJSON() {}
+  fromJSON() {}
 }
 
 //-----------------------------------------------------
@@ -121,20 +124,16 @@ export class UIModePersistence extends UIMode {
     let serializedGameState = window.localStorage.getItem(this.game._PERSISTANCE_NAMESPACE);
     let savedState = JSON.parse(serializedGameState);
     
-    console.log("savedState");
-    console.dir(savedState);
-    
     initializeDatastore();
     
+    // restore game core
     DATASTORE.GAME = this.game;
     this.game.fromJSON(savedState.GAME);
 
+    // restore maps (note: in the future might not instantiate all maps here, but instead build some kind of instantiate on demand)
     for (let savedMapId in savedState.MAPS) {
       makeMap(JSON.parse(savedState.MAPS[savedMapId]));
     }
-
-    console.log("datastore:");
-    console.dir(DATASTORE);
 
     this.game.messageHandler.send("Game loaded");
     this.game.switchMode('play');
@@ -241,6 +240,14 @@ export class UIModePlay extends UIMode {
     this._STATE.cameraMapLoc.x = newX;
     this._STATE.cameraMapLoc.y = newY;
     this.render();
+  }
+  
+  toJSON() {
+    return JSON.stringify(this._STATE);
+  }
+  
+  fromJSON(json) {
+    this._STATE = JSON.parse(json);
   }
 }
 

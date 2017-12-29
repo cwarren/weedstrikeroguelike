@@ -39,7 +39,7 @@ export let Game = {
     }
   },
 
-  _STATE: {},
+  // _STATE: {},
   _PERSISTANCE_NAMESPACE: 'weedstrikegame',
 
   isPlaying: false,
@@ -82,10 +82,10 @@ export let Game = {
     console.log("datastore:");
     console.dir(DATASTORE);
 
-    this._STATE.randomSeed = 5 + Math.floor(Math.random()*100000);
-    //this._STATE.randomSeed = 76250;
-    console.log("using random seed "+this._STATE.randomSeed);
-    ROT.RNG.setSeed(this._STATE.randomSeed);
+    // this._STATE.randomSeed = 5 + Math.floor(Math.random()*100000);
+    // //this._STATE.randomSeed = 76250;
+    // console.log("using random seed "+this._STATE.randomSeed);
+    // ROT.RNG.setSeed(this._STATE.randomSeed);
     this._mode.play.startNewGame();
   },
 
@@ -157,12 +157,11 @@ export let Game = {
   },
   
   toJSON: function() {
-    var s = JSON.stringify(this._STATE);
-    return s;
+    return this._mode.play.toJSON();
   },
   
   fromJSON: function(json) {
-    this._STATE = JSON.parse(json);
+    this._mode.play.fromJSON(json);
   }
   
 };
