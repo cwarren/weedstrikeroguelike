@@ -183,27 +183,24 @@ export class UIModePlay extends UIMode {
   }
   
   startNewGame() {
-    this._STATE = {};
     let a = EntityFactory.create('avatar');
-    this._STATE.avatarId = a.getId();
     let m = makeMap({xdim:60,ydim:20});
-    this._STATE.curMapId = m.getId();
     m.addEntity(a);
-    this._STATE.cameraMapLoc = {
-      x: Math.round(m.getXDim()/2),
-      y: Math.round(m.getYDim()/2)
-    };
-    this._STATE.cameraDisplayLoc = {
+
+    this.attr = {};
+    this.attr.avatarId = a.getId();
+    this.attr.curMapId = m.getId();
+    this.attr.cameraMapLoc = {};
+    this.syncCameraToAvatar();
+    this.attr.cameraDisplayLoc = {
       x: Math.round(this.display.getOptions().width/2),
       y: Math.round(this.display.getOptions().height/2)
     };
   }
   
   render() {
-    DATASTORE.MAPS[this._STATE.curMapId].renderOn(this.display,
-      this._STATE.cameraMapLoc.x,this._STATE.cameraMapLoc.y);
-    // DATASTORE.ENTITIES[this._STATE.avatarId].drawOn(this.display,
-    //   this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
+    DATASTORE.MAPS[this.attr.curMapId].renderOn(this.display,
+      this.attr.cameraMapLoc.x,this.attr.cameraMapLoc.y);
   }
 
   handleInput(inputType,inputData) {
@@ -254,21 +251,22 @@ export class UIModePlay extends UIMode {
 
   // (keeping in mind that top left is 0,0, so positive y moves you down)
   moveBy(x,y) {
-    let newX = this._STATE.cameraMapLoc.x + x;
-    let newY = this._STATE.cameraMapLoc.y + y;
-    if (newX < 0 || newX > DATASTORE.MAPS[this._STATE.curMapId].getXDim() - 1) { return; }
-    if (newY < 0 || newY > DATASTORE.MAPS[this._STATE.curMapId].getYDim() - 1) { return; }
-    this._STATE.cameraMapLoc.x = newX;
-    this._STATE.cameraMapLoc.y = newY;
+    DATASTORE.ENTITIES[this.attr.avatarId].moveBy(x,y);
+    this.syncCameraToAvatar();
     this.render();
   }
   
+  syncCameraToAvatar() {
+    this.attr.cameraMapLoc.x = DATASTORE.ENTITIES[this.attr.avatarId].getx();
+    this.attr.cameraMapLoc.y = DATASTORE.ENTITIES[this.attr.avatarId].gety();
+  }
+  
   toJSON() {
-    return JSON.stringify(this._STATE);
+    return JSON.stringify(this.attr);
   }
   
   fromJSON(json) {
-    this._STATE = JSON.parse(json);
+    this.attr = JSON.parse(json);
   }
 }
 

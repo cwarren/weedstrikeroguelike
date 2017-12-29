@@ -1,5 +1,6 @@
 import {DisplaySymbol} from './display_symbol.js';
 import {uniqueId} from './util.js';
+import {DATASTORE} from './datastore.js';
 
 export class Entity extends DisplaySymbol {
   constructor(templateName, template) {
@@ -38,6 +39,14 @@ export class Entity extends DisplaySymbol {
       this.attr.x = x_or_xy;
       this.attr.y = y;
     }
+  }
+  moveBy(dx,dy) {
+    if (! this.attr.mapId) {
+      this.attr.x += dx;
+      this.attr.y += dy;
+      return true;
+    }
+    return DATASTORE.MAPS[this.attr.mapId].moveEntityTo(this,this.attr.x + dx,this.attr.y + dy);
   }
   
   toJSON() {

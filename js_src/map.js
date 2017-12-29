@@ -36,6 +36,17 @@ class Map {
     delete this.attr.locationToEntityId[e.getxcy()]
   }
   
+  moveEntityTo(e,x,y) {
+    if ((x < 0) || (x >= this.attr.xdim) || (y<0) || (y >= this.attr.ydim)) {
+      return false;
+    }
+    delete this.attr.locationToEntityId[e.getxcy()];
+    e.setpos(x,y);
+    this.attr.locationToEntityId[e.getxcy()] = e.getId();
+    this.attr.entityIdToLocation[e.getId()] = e.getxcy();
+    return true;
+  }
+  
   getId() { return this.attr.id; }
   setId(newId) { this.attr.id = newId; }
   getRngBaseState() { return this.attr.rngBaseState; }
@@ -55,8 +66,8 @@ class Map {
     let o = display.getOptions();
     let xStart = camX-Math.round(o.width/2);
     let yStart = camY-Math.round(o.height/2);   
-    for (let x=0;x<this.attr.xdim;x++) {
-      for (let y=0;y<this.attr.ydim;y++) {
+    for (let x=0;x<o.width;x++) {
+      for (let y=0;y<o.height;y++) {
         this.getDisplaySymbolAtMapLocation(x+xStart, y+yStart).drawOn(display,x,y);
       }      
     }
