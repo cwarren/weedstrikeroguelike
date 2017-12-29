@@ -47,6 +47,16 @@ class Map {
     return true;
   }
   
+  getRandomWalkableOpenLocation() {
+    let rx = Math.trunc(this.rng.getUniform()*this.attr.xdim);
+    let ry = Math.trunc(this.rng.getUniform()*this.attr.ydim);
+    // console.log(`checking ${rx},${ry}`);
+    if (this.attr.locationToEntityId[`${rx},${ry}`] || this.getTile(rx,ry).isImpassable()) {
+      return this.getRandomWalkableOpenLocation();
+    }
+    return {x: rx, y: ry};
+  }
+  
   getId() { return this.attr.id; }
   setId(newId) { this.attr.id = newId; }
   getRngBaseState() { return this.attr.rngBaseState; }

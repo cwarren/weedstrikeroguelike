@@ -10,5 +10,4 @@ This is the project plan for Weed Strike. This covers general planning thoughts 
     1. entities can walk only on walkable tiles
     1. get a map entry location (a walkable space close to the perimeter)
     1. put avatar at that location to start the game
-1. bug fix: render map after game load/restore    
     

@@ -185,6 +185,7 @@ export class UIModePlay extends UIMode {
   startNewGame() {
     let a = EntityFactory.create('avatar');
     let m = makeMap({xdim:60,ydim:20});
+    a.setpos(m.getRandomWalkableOpenLocation());
     m.addEntity(a);
 
     this.attr = {};
