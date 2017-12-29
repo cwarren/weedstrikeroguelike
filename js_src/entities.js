@@ -9,5 +9,6 @@ EntityFactory.learn({
   templateName: 'avatar',
   descr: 'a mighty gardener',
   chr: '@',
-  fg: '#ee1'
+  fg: '#ee1',
+  mixins: ["TimeTracker"]
 });

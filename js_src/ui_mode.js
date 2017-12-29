@@ -201,6 +201,11 @@ export class UIModePlay extends UIMode {
     };
   }
   
+  getAvatar() {
+    if (! this.attr || ! this.attr.avatarId) { return false; }
+    return DATASTORE.ENTITIES[this.attr.avatarId];
+  }
+  
   render() {
     DATASTORE.MAPS[this.attr.curMapId].renderOn(this.display,
       this.attr.cameraMapLoc.x,this.attr.cameraMapLoc.y);
@@ -255,6 +260,7 @@ export class UIModePlay extends UIMode {
   // (keeping in mind that top left is 0,0, so positive y moves you down)
   moveBy(x,y) {
     if (DATASTORE.ENTITIES[this.attr.avatarId].moveBy(x,y)) {
+      DATASTORE.ENTITIES[this.attr.avatarId].addTime(1);
       this.syncCameraToAvatar();
       this.render();
     } else {
