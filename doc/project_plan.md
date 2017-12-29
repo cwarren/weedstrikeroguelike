@@ -4,9 +4,7 @@ This is the project plan for Weed Strike. This covers general planning thoughts 
 
 1. enter the avatar
   1. basic entity architecture
-    1. simple entity object
-    1. entity factory
-    1. entity template
+    1. entity persistence    
   1. entity movement (and persistence of entity location)
   1. wall solidity (and initial map position)
 

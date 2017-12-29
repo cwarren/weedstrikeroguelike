@@ -8,30 +8,30 @@ class Map {
     if (! TILE_GRID_GENERATORS.hasOwnProperty(mapType)) {
       mapType = 'basicCaves';
     }
-    this._attr = {};
-    this._attr.xdim = xdim;
-    this._attr.ydim = ydim;
-    this._attr.mapType = mapType;
-    this._attr.id = uniqueId();
+    this.attr = {};
+    this.attr.id = uniqueId();
+    this.attr.mapType = mapType;
+    this.attr.xdim = xdim;
+    this.attr.ydim = ydim;
     this.rng = ROT.RNG.clone();
-    this._attr.rngBaseState = this.rng.getState();
+    this.attr.rngBaseState = this.rng.getState();
   }
   
   setUp() {
-    this.rng.setState(this._attr.rngBaseState);
-    this.tileGrid = TILE_GRID_GENERATORS[this._attr.mapType](this._attr.xdim,this._attr.ydim,this._attr.rngBaseState);
+    this.rng.setState(this.attr.rngBaseState);
+    this.tileGrid = TILE_GRID_GENERATORS[this.attr.mapType](this.attr.xdim,this.attr.ydim,this.attr.rngBaseState);
   }
   
-  getId() { return this._attr.id; }
-  setId(newId) { this._attr.id = newId; }
-  getRngBaseState() { return this._attr.rngBaseState; }
-  setRngBaseState(newRngBaseState) { this._attr.rngBaseState = newRngBaseState; }
+  getId() { return this.attr.id; }
+  setId(newId) { this.attr.id = newId; }
+  getRngBaseState() { return this.attr.rngBaseState; }
+  setRngBaseState(newRngBaseState) { this.attr.rngBaseState = newRngBaseState; }
   
-  getXDim() { return this._attr.xdim; }
-  getYDim() { return this._attr.ydim; }
+  getXDim() { return this.attr.xdim; }
+  getYDim() { return this.attr.ydim; }
   
   getTile(x,y) {
-    if ((x < 0) || (x >= this._attr.xdim) || (y<0) || (y >= this._attr.ydim)) {
+    if ((x < 0) || (x >= this.attr.xdim) || (y<0) || (y >= this.attr.ydim)) {
       return TILES.NULLTILE;
     }
     return this.tileGrid[x][y] || TILES.NULLTILE;
@@ -41,8 +41,8 @@ class Map {
     let o = display.getOptions();
     let xStart = camX-Math.round(o.width/2);
     let yStart = camY-Math.round(o.height/2);   
-    for (let x=0;x<this._attr.xdim;x++) {
-      for (let y=0;y<this._attr.ydim;y++) {
+    for (let x=0;x<this.attr.xdim;x++) {
+      for (let y=0;y<this.attr.ydim;y++) {
         let tile = this.getTile(x+xStart, y+yStart);
         if (tile.isA(TILES.NULLTILE)) {
           tile = TILES.WALL;
@@ -53,7 +53,7 @@ class Map {
   }
   
   toJSON() {
-    return JSON.stringify(this._attr);
+    return JSON.stringify(this.attr);
   }
 }
 

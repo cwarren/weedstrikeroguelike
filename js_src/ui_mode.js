@@ -14,8 +14,16 @@ class UIMode {
     this.display = this.game.getDisplay("main");
   }
   
-  enter()       { console.log(`UIMode enter - ${this.constructor.name}`); }
-  exit()        { console.log(`UIMode exit - ${this.constructor.name}`); }
+  enter()       {
+    console.log(`UIMode enter - ${this.constructor.name}`);
+  // console.log("datastore:");
+  // console.dir(DATASTORE);
+ }
+  exit()        {
+    console.log(`UIMode exit - ${this.constructor.name}`);
+  // console.log("datastore:");
+  // console.dir(DATASTORE);
+ }
   render()      { console.log(`UIMode render - ${this.constructor.name}`); }
   handleInput(inputType,inputData) { 
     console.log(`UIMode handleInput - ${this.constructor.name}`);
@@ -135,7 +143,16 @@ export class UIModePersistence extends UIMode {
     for (let savedMapId in savedState.MAPS) {
       makeMap(JSON.parse(savedState.MAPS[savedMapId]));
     }
-
+    
+    // restore entities
+    for (let savedEntityId in savedState.ENTITIES) {
+      let entState = JSON.parse(savedState.ENTITIES[savedEntityId]);
+      EntityFactory.create(entState.templateName,entState);
+    }
+    
+    // console.log('restored DATASTORE:');
+    // console.dir(DATASTORE);
+    
     this.game.messageHandler.send("Game loaded");
     this.game.switchMode('play');
   }
@@ -163,11 +180,11 @@ export class UIModePlay extends UIMode {
     super.enter();
     // this.game.messageHandler.clear();
     this.game.isPlaying = true;
-    this.avatar = EntityFactory.create('avatar');
   }
   
   startNewGame() {
     this._STATE = {};
+    this._STATE.avatarId = EntityFactory.create('avatar').getId();
     let m = makeMap({xdim:60,ydim:20});
     this._STATE.curMapId = m.getId();
     this._STATE.cameraMapLoc = {
@@ -183,7 +200,8 @@ export class UIModePlay extends UIMode {
   render() {
     DATASTORE.MAPS[this._STATE.curMapId].renderOn(this.display,
       this._STATE.cameraMapLoc.x,this._STATE.cameraMapLoc.y);
-    this.avatar.drawOn(this.display,this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
+    DATASTORE.ENTITIES[this._STATE.avatarId].drawOn(this.display,
+      this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
   }
 
   handleInput(inputType,inputData) {

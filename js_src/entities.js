@@ -1,10 +1,10 @@
 import {Entity} from './entity.js';
 import {Factory} from './factory.js';
 
-export let EntityFactory = new Factory('entities', Entity);
+export let EntityFactory = new Factory('ENTITIES', Entity);
 
 EntityFactory.learn({
-  name: 'avatar',
+  templateName: 'avatar',
   descr: 'a mighty gardener',
   chr: '@',
   fg: '#ee1'

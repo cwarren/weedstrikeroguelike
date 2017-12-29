@@ -49,9 +49,6 @@ export let Game = {
     console.log("Game object:");
     console.dir(Game);  
 
-    console.log("DATASTORE object:");
-    console.dir(DATASTORE);  
-
     this._setupDisplays();
     this._setupUIModes();
 
@@ -75,17 +72,16 @@ export let Game = {
     this._mode.lose = new UIModeLose(this);
   },
 
+  // handy dev function to access the DATASTORE on the browser console
+  DEV_dslog: function() {
+    console.log("datastore:");
+    console.dir(DATASTORE);
+  },
+
   startNewGame: function() {
     console.log("starting new game");
     initializeDatastore();
     DATASTORE.GAME = this;
-    console.log("datastore:");
-    console.dir(DATASTORE);
-
-    // this._STATE.randomSeed = 5 + Math.floor(Math.random()*100000);
-    // //this._STATE.randomSeed = 76250;
-    // console.log("using random seed "+this._STATE.randomSeed);
-    // ROT.RNG.setSeed(this._STATE.randomSeed);
     this._mode.play.startNewGame();
   },
 

@@ -1,22 +1,23 @@
 import {DisplaySymbol} from './display_symbol.js';
 import {uniqueId} from './util.js';
-import {DATASTORE} from './datastore.js';
 
 export class Entity extends DisplaySymbol {
-  constructor(template) {
+  constructor(templateName, template) {
     super(template);
-    this.name = template.name || 'no name';
+    this.name = template.name || template.templateName || 'no name';
     this.descr = template.descr || 'boring';
 
     // NOTE: data in this.attr is persisted, and other object data is not (it's just re-created on load)
     if (! ('attr' in this)) { this.attr = {}; }
-    this.attr.id = template.existingId || uniqueId();
-    DATASTORE.ENTITIES[this.attr.id] = this;
+    this.attr.id = uniqueId();
+    this.attr.templateName = template.templateName;
     this.attr.x = template.x || 1;
     this.attr.y = template.y || 1;
   }
 
   getName() { return this.name; }
+
+  getId() { return this.attr.id; }
   
   getx() { return this.attr.x; }
   gety() { return this.attr.y; }
@@ -33,5 +34,16 @@ export class Entity extends DisplaySymbol {
     }
   }
   
+  toJSON() {
+    return JSON.stringify(this.attr);
+  }
+  
+  fromJSON(json) {
+    this.attr = JSON.parse(json);
+  }
+ 
+  fromState(state) {
+    this.attr = state;
+  }
 }
 

@@ -1,30 +1,28 @@
+import {DATASTORE} from './datastore.js';
+
 export class Factory {
-  constructor(factoryName,productClass) {
-    this.name = factoryName;
+  constructor(datastoreKey,productClass) {
+    this.datastoreKey = datastoreKey;
     this.productClass = productClass;
     this.templates = {};
   }
   
   learn(template) {
-    if (! template.name) {
+    if (! template.templateName) {
       console.log("factory requires a name in a template it's trying to learn");
       console.dir(template);
       return false;
     }
-    this.templates[template.name] = template;
+    this.templates[template.templateName] = template;
   }
   
   // the existingId is used during persistence restores
-  create(templateName, existingId) {
-    let t = this.templates[templateName];
-    if (! t) { 
-      console.log(`Factory ${this.name} does not have any temple by name of ${templateName}`);
-      return false;
+  create(templateName, restorationState) {
+    let p = new this.productClass(templateName,this.templates[templateName]);
+    if (restorationState) {
+      p.fromState(restorationState);
     }
-    if (existingId) {
-      t = JSON.parse(JSON.stringify(t)); // avoid clobbering the original template
-      t.existingId = existingId;
-    }
-    return new this.productClass(t);
+    DATASTORE[this.datastoreKey][p.getId()] = p;
+    return p;
   }
 }
