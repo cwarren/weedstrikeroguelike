@@ -184,9 +184,11 @@ export class UIModePlay extends UIMode {
   
   startNewGame() {
     this._STATE = {};
-    this._STATE.avatarId = EntityFactory.create('avatar').getId();
+    let a = EntityFactory.create('avatar');
+    this._STATE.avatarId = a.getId();
     let m = makeMap({xdim:60,ydim:20});
     this._STATE.curMapId = m.getId();
+    m.addEntity(a);
     this._STATE.cameraMapLoc = {
       x: Math.round(m.getXDim()/2),
       y: Math.round(m.getYDim()/2)
@@ -200,8 +202,8 @@ export class UIModePlay extends UIMode {
   render() {
     DATASTORE.MAPS[this._STATE.curMapId].renderOn(this.display,
       this._STATE.cameraMapLoc.x,this._STATE.cameraMapLoc.y);
-    DATASTORE.ENTITIES[this._STATE.avatarId].drawOn(this.display,
-      this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
+    // DATASTORE.ENTITIES[this._STATE.avatarId].drawOn(this.display,
+    //   this._STATE.cameraDisplayLoc.x,this._STATE.cameraDisplayLoc.y);
   }
 
   handleInput(inputType,inputData) {

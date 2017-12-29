@@ -15,11 +15,25 @@ class Map {
     this.attr.ydim = ydim;
     this.rng = ROT.RNG.clone();
     this.attr.rngBaseState = this.rng.getState();
+    this.attr.entityIdToLocation = {};
+    this.attr.locationToEntityId = {};
   }
   
   setUp() {
     this.rng.setState(this.attr.rngBaseState);
     this.tileGrid = TILE_GRID_GENERATORS[this.attr.mapType](this.attr.xdim,this.attr.ydim,this.attr.rngBaseState);
+  }
+
+  addEntity(e) {
+    e.setMapId(this.attr.id);
+    this.attr.entityIdToLocation[e.getId()] = e.getxcy();
+    this.attr.locationToEntityId[e.getxcy()] = e.getId();
+  }
+  
+  removeEntity(e) {
+    e.setMapId('');
+    delete this.attr.entityIdToLocation[e.getId()];
+    delete this.attr.locationToEntityId[e.getxcy()]
   }
   
   getId() { return this.attr.id; }
