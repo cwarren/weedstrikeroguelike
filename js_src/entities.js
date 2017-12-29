@@ -1,3 +1,5 @@
+// definitions for the various entities in the game
+
 import {Entity} from './entity.js';
 import {Factory} from './factory.js';
 

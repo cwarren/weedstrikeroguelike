@@ -1,3 +1,5 @@
+// general organization of the project and supporting tools/libraries (as opposed to the actual game)
+
 import 'babel-polyfill';
 import ROT from 'rot-js';
 import {Game} from './game.js';

@@ -1,3 +1,5 @@
+// a single space on a map, has a type and various characteristics
+
 import {DisplaySymbol} from './display_symbol.js';
 
 export class Tile extends DisplaySymbol {

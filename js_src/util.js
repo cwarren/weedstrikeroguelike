@@ -1,4 +1,6 @@
+// various generally useful functions
 
+// get a string of random characters
 let randStringCharSource = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
 export function randomString(len = 8) {
   var res='';
@@ -8,12 +10,14 @@ export function randomString(len = 8) {
     return res;
 }
 
+// get a string of random characters that's unique to a given page load
 let ID_SEQ = 0;
 export function uniqueId() {
   ID_SEQ++;
   return `${ID_SEQ}-${randomString()}`;
 }
 
+// create (and return) a 2D array that's been initialized with a given value
 export function init2DArray(x=1,y=1,initVal='') {
   var a = [];
   for (var xdim=0; xdim < x; xdim++) {

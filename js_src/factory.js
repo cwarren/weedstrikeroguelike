@@ -1,3 +1,6 @@
+// a general tool for creating instances of objects from a set of templates
+// also handles datastore management for those things, and restores from saved state
+
 import {DATASTORE} from './datastore.js';
 
 export class Factory {

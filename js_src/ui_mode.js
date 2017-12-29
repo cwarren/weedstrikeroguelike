@@ -1,3 +1,5 @@
+// the modes in which a player can interact with the game (the nodes in a state model of the player-game relationship)
+
 import ROT from 'rot-js';
 import {makeMap} from './map.js';
 import {Color} from './colors.js';

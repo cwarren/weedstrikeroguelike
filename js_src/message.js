@@ -1,3 +1,5 @@
+// encapsulates sending messages/notes to the player
+
 export let Message = {
   _curMessage: '',
   _targetDisplay: '',

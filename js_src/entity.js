@@ -1,4 +1,5 @@
-import {DisplaySymbol} from './display_symbol.js';
+// a creature/mob in the game
+
 import {uniqueId} from './util.js';
 import {DATASTORE} from './datastore.js';
 

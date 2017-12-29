@@ -1,3 +1,5 @@
+// a symbol/character that can be shown on the main game display; the base class for everything that's shown on the map
+
 import {Color} from './colors.js';
 
 export class DisplaySymbol {

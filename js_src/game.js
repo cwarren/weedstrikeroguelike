@@ -1,3 +1,5 @@
+// the core of the game - does reatively little on its own but organizes/manages and kicks off everything else
+
 import ROT from 'rot-js';
 import * as U from './util.js';
 import {Message} from './message.js';

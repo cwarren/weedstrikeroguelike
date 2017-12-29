@@ -1,3 +1,5 @@
+// a square grid of spaces/tiles, which can have entities and items in/on them
+
 import ROT from 'rot-js';
 import {uniqueId,init2DArray} from './util.js';
 import {TILES} from './tile.js';
