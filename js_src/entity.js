@@ -24,6 +24,7 @@ export class Entity extends MixableSymbol {
   getId() { return this.attr.id; }
   
   getMapId() { return this.attr.mapId;}
+  getMap() { return DATASTORE.MAPS[this.attr.mapId];}
   setMapId(m) { this.attr.mapId = m;}
 
   getx() { return this.attr.x; }
@@ -42,14 +43,15 @@ export class Entity extends MixableSymbol {
       this.attr.y = y;
     }
   }
-  moveBy(dx,dy) {
-    if (! this.attr.mapId) {
-      this.attr.x += dx;
-      this.attr.y += dy;
-      return true;
-    }
-    return DATASTORE.MAPS[this.attr.mapId].moveEntityTo(this,this.attr.x + dx,this.attr.y + dy);
-  }
+
+  // moveBy(dx,dy) {
+  //   if (! this.attr.mapId) {
+  //     this.attr.x += dx;
+  //     this.attr.y += dy;
+  //     return true;
+  //   }
+  //   return DATASTORE.MAPS[this.attr.mapId].moveEntityTo(this,this.attr.x + dx,this.attr.y + dy);
+  // }
   
   toJSON() {
     return JSON.stringify(this.attr);

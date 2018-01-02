@@ -30,6 +30,26 @@ let _exampleMixin = {
 
 //############################################################
 
+export let WalkerCorporeal = {
+  META: {
+    mixinName: 'WalkerCorporeal',
+    mixinGroup: 'Walker'
+  },
+  METHODS: { // OPTIONAL, though without at least one method or listener the mixin's less useful
+    tryWalk: function(dx,dy) {
+      let newx = this.getx()+dx;
+      let newy = this.gety()+dy;
+      let md = this.getMap().getMapDataAt(newx,newy);
+      if (md.entity) { return false; } // NOTE: this is entity interaction! later will be combat (or other?)
+      if (md.tile.isImpassable()) { return false; }
+      this.getMap().moveEntityTo(this,newx,newy);
+      return true;
+    }
+  }
+}
+
+//############################################################
+
 export let TimeTracker = {
   META: {
     mixinName: 'TimeTracker',

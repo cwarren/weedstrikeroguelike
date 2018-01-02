@@ -37,7 +37,7 @@ class Map {
     delete this.attr.entityIdToLocation[e.getId()];
     delete this.attr.locationToEntityId[e.getxcy()]
   }
-  
+
   moveEntityTo(e,x,y) {
     if ((x < 0) || (x >= this.attr.xdim) || (y<0) || (y >= this.attr.ydim)) {
       return false;
@@ -99,6 +99,17 @@ class Map {
   
   testLocationBlocked(x,y) {
     return (this.attr.locationToEntityId[`${x},${y}`] || this.getTile(x,y).isImpassable());
+  }
+  
+  getMapDataAt(x,y) {
+    let d = {
+      entity: false,
+      tile: this.getTile(x,y)
+    }
+    if (this.attr.locationToEntityId[`${x},${y}`]) {
+      d.e = DATASTORE.ENTITIES[this.attr.locationToEntityId[`${x},${y}`]];
+    }
+    return d;
   }
   
   getId() { return this.attr.id; }

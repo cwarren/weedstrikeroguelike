@@ -258,8 +258,8 @@ export class UIModePlay extends UIMode {
   }
 
   // (keeping in mind that top left is 0,0, so positive y moves you down)
-  moveBy(x,y) {
-    if (DATASTORE.ENTITIES[this.attr.avatarId].moveBy(x,y)) {
+  moveBy(dx,dy) {
+    if (DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(dx,dy)) {
       DATASTORE.ENTITIES[this.attr.avatarId].addTime(1);
       this.syncCameraToAvatar();
       this.render();
