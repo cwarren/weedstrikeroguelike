@@ -43,6 +43,15 @@ export let PlayerMessager = {
     },
     'movementBlocked': function(evtData) {
       Message.send(`${this.getName()} cannot move there because ${evtData.reasonBlocked}`);
+    },
+    'damaged': function(evtData) { // handler for 'eventLabel' events
+      Message.send(`${this.getName()} took ${evtData.damageAmt} from ${evtData.damageSrc.getName()}`);
+    },
+    'killed': function(evtData) { // handler for 'eventLabel' events
+      Message.send(`${this.getName()} killed by ${evtData.killer.getName()}`);
+    },
+    'kills': function(evtData) { // handler for 'eventLabel' events
+      Message.send(`${this.getName()} kills ${evtData.kills.getName()}`);
     }
   }
 }
@@ -86,19 +95,19 @@ export let TimeTracker = {
     }
   },
   METHODS: {
-    getTime: function() {
+    getTimeTaken: function() {
       return this.attr._TimeTracker.timeCounter;
     },
-    setTime: function(t) {
+    setTimeTaken: function(t) {
       this.attr._TimeTracker.timeCounter = t;
     },
-    addTime: function(t) {
+    addTimeTaken: function(t) {
       this.attr._TimeTracker.timeCounter += t;
     }
   },
   LISTENERS: {
     'turnTaken': function(evtData) {
-      this.addTime(1);
+      this.addTimeTaken(1);
     }
   }
 };
@@ -133,12 +142,21 @@ export let HitPoints = {
     },
     setMaxHp: function(newMaxHp) {
       this.attr._HitPoints.maxHp = newMaxHp;
+    },
+    getCurHp: function() {
+      return this.attr._HitPoints.curHp;
+    },
+    getMaxHp: function() {
+      return this.attr._HitPoints.maxHp;
     }
   },
   LISTENERS: {
     'damaged': function(evtData) { // handler for 'eventLabel' events
-      let evtResp = {};
-      return evtResp;
+      this.loseHp(evtData.damageAmt);
+      if (this.attr._HitPoints.curHp <= 0) {
+        this.raiseMixinEvent("killed",{'killer':evtData.damageSrc});
+        evtData.damageSrc.raiseMixinEvent("kills",{'kills':this});
+      }
     }
   }
 }

@@ -209,13 +209,11 @@ export class UIModePlay extends UIMode {
   }
 
   renderAvatarOn(display) {
-    display.drawText(1,1,"Avatar");
-    let a = this.getAvatar();
-    if (! a) {
-      return;
-    }
-    display.drawText(3,2,`loc: ${a.getxcy()}`);
-    display.drawText(3,3,`trn: ${a.getTime()}`);    
+    let av = this.getAvatar();
+    var y = 0;
+    y += display.drawText(1,y,Color.DEFAULT+"LIFE: "+av.getCurHp()+"/"+av.getMaxHp());
+    y++;
+    y += display.drawText(1,y,Color.DEFAULT+"TIME: "+av.getTimeTaken());
   }
   
   render() {

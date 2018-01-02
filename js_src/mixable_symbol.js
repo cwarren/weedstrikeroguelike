@@ -1,14 +1,17 @@
 // a display symbol that can have mixins to add functionality
 import * as E from './mixins_for_entities.js'; 
-
+import {uniqueId} from './util.js';
 import {DisplaySymbol} from './display_symbol.js';
 
 export class MixableSymbol extends DisplaySymbol {
   constructor(template) {
     super(template);
+    this.name = template.name || template.templateName || 'no name';
+    this.descr = template.descr || '';
     if (! ('attr' in this)) { this.attr = {}; }
+    this.attr.id = uniqueId();
     
-    if (!template.mixins) { template.mixins = []; }    
+    if (!template.mixins) { template.mixins = []; }
     this.mixinNames = template.mixins.slice();
     this.mixins = [];
     this.mixinTracker = {};
@@ -51,6 +54,11 @@ export class MixableSymbol extends DisplaySymbol {
       }
     }
   }
+
+  getName() { return this.name; }
+
+  getId() { return this.attr.id; }
+  
 
   // -----------------------------------
    
