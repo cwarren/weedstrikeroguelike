@@ -142,6 +142,7 @@ export class UIModePersistence extends UIMode {
     // restore game core
     DATASTORE.GAME = this.game;
     this.game.fromJSON(savedState.GAME);
+    DATASTORE.ID_SEQ = savedState.ID_SEQ;
 
     // restore maps (note: in the future might not instantiate all maps here, but instead build some kind of instantiate on demand)
     for (let savedMapId in savedState.MAPS) {

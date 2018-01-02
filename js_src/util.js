@@ -1,5 +1,7 @@
 // various generally useful functions
 
+import {DATASTORE} from './datastore.js';
+
 // get a string of random characters
 let randStringCharSource = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
 export function randomString(len = 8) {
@@ -10,11 +12,10 @@ export function randomString(len = 8) {
     return res;
 }
 
-// get a string of random characters that's unique to a given page load
-let ID_SEQ = 0;
+// get a string of random characters that's unique to a given game instance
 export function uniqueId() {
-  ID_SEQ++;
-  return `${ID_SEQ}-${randomString()}`;
+  DATASTORE.ID_SEQ++;
+  return `${DATASTORE.ID_SEQ}-${randomString()}`;
 }
 
 // create (and return) a 2D array that's been initialized with a given value
