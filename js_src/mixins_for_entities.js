@@ -1,3 +1,5 @@
+import {Message} from './message.js';
+
 // chunks of functionality that can be added to entity instances
 
 let _exampleMixin = {
@@ -30,19 +32,46 @@ let _exampleMixin = {
 
 //############################################################
 
+
+export let PlayerMessager = {
+  META: {
+    mixinName: 'PlayerMessager',
+    mixinGroup: 'PlayerMessager',
+  },
+  LISTENERS: {
+    'turnTaken': function(evtData) {
+      Message.send(evtData.turnAction);
+      return {};
+    },
+    'movementBlocked': function(evtData) {
+      Message.send(`${this.getName()} cannot move there because ${evtData.reasonBlocked}`);
+      return {};
+    }
+  }
+}
+
+//############################################################
+
 export let WalkerCorporeal = {
   META: {
     mixinName: 'WalkerCorporeal',
     mixinGroup: 'Walker'
   },
-  METHODS: { // OPTIONAL, though without at least one method or listener the mixin's less useful
+  METHODS: {
     tryWalk: function(dx,dy) {
       let newx = this.getx()+dx;
       let newy = this.gety()+dy;
       let md = this.getMap().getMapDataAt(newx,newy);
-      if (md.entity) { return false; } // NOTE: this is entity interaction! later will be combat (or other?)
-      if (md.tile.isImpassable()) { return false; }
+      if (md.entity) { // NOTE: this is entity interaction! later will be combat (or other?)
+        this.raiseMixinEvent('movementBlocked',{'reasonBlocked':'the space is occupied'});
+        return false;
+      }
+      if (md.tile.isImpassable()) {
+        this.raiseMixinEvent('movementBlocked',{'reasonBlocked':'the space is impassable'});
+        return false;
+      }
       this.getMap().moveEntityTo(this,newx,newy);
+      this.raiseMixinEvent('turnTaken',{'turnAction':'walk'});
       return true;
     }
   }
@@ -69,5 +98,13 @@ export let TimeTracker = {
     addTime: function(t) {
       this.attr._TimeTracker.timeCounter += t;
     }
+  },
+  LISTENERS: {
+    'turnTaken': function(evtData) {
+      let evtResp = {};
+      this.addTime(1);
+      return evtResp;
+    }
   }
+
 };

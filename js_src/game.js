@@ -11,7 +11,7 @@ console.dir(ROT);
 
 export let Game = {
 
-  messageHandler: Message,
+  // messageHandler: Message,
   
   _mode: {
     launch: '',
@@ -54,7 +54,7 @@ export let Game = {
     this._setupDisplays();
     this._setupUIModes();
 
-    this.messageHandler.init(this.getDisplay('message'));
+    Message.init(this.getDisplay('message'));
     
     this.switchMode('launch');
   },
@@ -126,7 +126,7 @@ export let Game = {
   },
   
   renderDisplayMessage: function() {
-    this.messageHandler.render();
+    Message.render();
   },
   
   bindEvent: function(eventType) {

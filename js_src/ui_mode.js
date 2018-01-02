@@ -1,6 +1,7 @@
 // the modes in which a player can interact with the game (the nodes in a state model of the player-game relationship)
 
 import ROT from 'rot-js';
+import {Message} from './message.js';
 import {makeMap} from './map.js';
 import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
@@ -48,7 +49,7 @@ class UIMode {
 export class UIModeLaunch extends UIMode {
   enter() {
     super.enter();
-    this.game.messageHandler.send("Welcome to WSRL");
+    Message.send("Welcome to WSRL");
     this.keyPressGate = false;
   }
   
@@ -96,7 +97,7 @@ export class UIModePersistence extends UIMode {
     if (inputType == 'keyup') {
       if (inputData.key == 'n' || inputData.key == 'N') {
         this.game.startNewGame();
-        this.game.messageHandler.send("New game started");
+        Message.send("New game started");
         this.game.switchMode('play');
       }
       else if (inputData.key == 's' || inputData.key == 'S') {
@@ -124,7 +125,7 @@ export class UIModePersistence extends UIMode {
     // let serializedGameState = this.game.serialize();
     window.localStorage.setItem(this.game._PERSISTANCE_NAMESPACE,JSON.stringify(DATASTORE));
     this.game.hasSaved = true;
-    this.game.messageHandler.send("Game saved");
+    Message.send("Game saved");
     this.game.switchMode('play');
   }
   
@@ -155,7 +156,7 @@ export class UIModePersistence extends UIMode {
     // console.log('restored DATASTORE:');
     // console.dir(DATASTORE);
     
-    this.game.messageHandler.send("Game loaded");
+    Message.send("Game loaded");
     this.game.switchMode('play');
   }
   
@@ -168,7 +169,7 @@ export class UIModePersistence extends UIMode {
       return true;
     }
     catch(e) {
-      this.game.messageHandler.send('Sorry, no local data storage is available for this browser so game save/load is not possible');
+      Message.send('Sorry, no local data storage is available for this browser so game save/load is not possible');
       return false;
     }
   }
@@ -180,7 +181,7 @@ export class UIModePersistence extends UIMode {
 export class UIModePlay extends UIMode {
   enter() {
     super.enter();
-    // this.game.messageHandler.clear();
+    // Message.clear();
     this.game.isPlaying = true;
   }
   
@@ -214,7 +215,9 @@ export class UIModePlay extends UIMode {
   handleInput(inputType,inputData) {
     // super.handleInput(inputType,inputData);
     if (inputType == 'keyup') {
-      this.game.messageHandler.send(`you pressed the ${inputData.key} key`);
+      let avatarMoved = false;
+
+      // Message.send(`you pressed the ${inputData.key} key`);
       if (inputData.key == 'w') {
         this.game.switchMode('win');
       }
@@ -227,44 +230,38 @@ export class UIModePlay extends UIMode {
       
       // navigation (keeping in mind that top left is 0,0, so positive y moves you down)
       else if (inputData.key == '1') {
-        this.moveBy(-1,1);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,1);
       }
       else if (inputData.key == '2') {
-        this.moveBy(0,1);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(0,1);
       }
       else if (inputData.key == '3') {
-        this.moveBy(1,1);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,1);
       }
       else if (inputData.key == '4') {
-        this.moveBy(-1,0);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,0);
       }
       else if (inputData.key == '5') {
-        // this.moveBy(0,0);
+        DATASTORE.ENTITIES[this.attr.avatarId].raiseMixinEvent('turnTaken',{'turnAction':'wait'});
       }
       else if (inputData.key == '6') {
-        this.moveBy(1,0);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,0);
       }
       else if (inputData.key == '7') {
-        this.moveBy(-1,-1);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,-1);
       }
       else if (inputData.key == '8') {
-        this.moveBy(0,-1);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(0,-1);
       }
       else if (inputData.key == '9') {
-        this.moveBy(1,-1);
+        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,-1);
+      }
+     
+      if (avatarMoved) {
+        this.syncCameraToAvatar();
+        this.render();
       }
       
-    }
-  }
-
-  // (keeping in mind that top left is 0,0, so positive y moves you down)
-  moveBy(dx,dy) {
-    if (DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(dx,dy)) {
-      DATASTORE.ENTITIES[this.attr.avatarId].addTime(1);
-      this.syncCameraToAvatar();
-      this.render();
-    } else {
-      this.game.messageHandler.send("you cannot move there");
     }
   }
   

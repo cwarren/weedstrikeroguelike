@@ -10,5 +10,5 @@ EntityFactory.learn({
   descr: 'a mighty gardener',
   chr: '@',
   fg: '#ee1',
-  mixins: ["WalkerCorporeal","TimeTracker"]
+  mixins: ["PlayerMessager","WalkerCorporeal","TimeTracker"]
 });
