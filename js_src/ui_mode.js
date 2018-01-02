@@ -28,6 +28,7 @@ class UIMode {
   // console.dir(DATASTORE);
  }
   render()      { console.log(`UIMode render - ${this.constructor.name}`); }
+  renderAvatarOn(display) { return; }
   handleInput(inputType,inputData) { 
     console.log(`UIMode handleInput - ${this.constructor.name}`);
     UIMode.dumpInput(inputType,inputData);
@@ -205,6 +206,16 @@ export class UIModePlay extends UIMode {
   getAvatar() {
     if (! this.attr || ! this.attr.avatarId) { return false; }
     return DATASTORE.ENTITIES[this.attr.avatarId];
+  }
+
+  renderAvatarOn(display) {
+    display.drawText(1,1,"Avatar");
+    let a = this.getAvatar();
+    if (! a) {
+      return;
+    }
+    display.drawText(3,2,`loc: ${a.getxcy()}`);
+    display.drawText(3,3,`trn: ${a.getTime()}`);    
   }
   
   render() {

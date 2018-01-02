@@ -32,7 +32,6 @@ let _exampleMixin = {
 
 //############################################################
 
-
 export let PlayerMessager = {
   META: {
     mixinName: 'PlayerMessager',
@@ -41,11 +40,9 @@ export let PlayerMessager = {
   LISTENERS: {
     'turnTaken': function(evtData) {
       Message.send(evtData.turnAction);
-      return {};
     },
     'movementBlocked': function(evtData) {
       Message.send(`${this.getName()} cannot move there because ${evtData.reasonBlocked}`);
-      return {};
     }
   }
 }
@@ -101,10 +98,47 @@ export let TimeTracker = {
   },
   LISTENERS: {
     'turnTaken': function(evtData) {
-      let evtResp = {};
       this.addTime(1);
+    }
+  }
+};
+
+//############################################################
+
+export let HitPoints = {
+  META: {
+    mixinName: 'HitPoints',
+    mixinGroup: 'HitPoints',
+    stateNamespace: '_HitPoints', 
+    stateModel: {
+      curHp: 0,
+      maxHp: 0
+    },
+    init: function(template) {
+      this.attr._HitPoints.maxHp = template.maxHp || 1;
+      this.attr._HitPoints.curHp = template.curHp || this.attr._HitPoints.maxHp;
+    }
+  },
+  METHODS: {
+    setHp: function(newHp) {
+      this.attr._HitPoints.curHp = newHp;
+    },
+    gainHp: function(dHp) {
+      if (dHp < 0) { return; }
+      this.attr._HitPoints.curHp = Math.min(this.attr._HitPoints.curHp+dHp,this.attr._HitPoints.maxHp);
+    },
+    loseHp: function(dHp) {
+      if (dHp < 0) { return; }
+      this.attr._HitPoints.curHp -= dHp;
+    },
+    setMaxHp: function(newMaxHp) {
+      this.attr._HitPoints.maxHp = newMaxHp;
+    }
+  },
+  LISTENERS: {
+    'damaged': function(evtData) { // handler for 'eventLabel' events
+      let evtResp = {};
       return evtResp;
     }
   }
-
-};
+}

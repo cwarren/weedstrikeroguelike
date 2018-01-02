@@ -103,17 +103,20 @@ export let Game = {
   renderDisplayAvatar: function() {
     let d = this._display.avatar.o;
     d.clear();
-    d.drawText(1,1,"Avatar");
-    let a = this._mode.play.getAvatar();
-    if (! a) {
+    if (this._curMode === null || this._curMode == '') {
       return;
+    } else {
+      this._curMode.renderAvatarOn(d);
     }
-    d.drawText(3,2,`loc: ${a.getxcy()}`);
-    d.drawText(3,3,`trn: ${a.getTime()}`);
-    
-    // for (let i = 0; i < 10; i++) {
-    //   d.drawText(5,i+5,"avatar");
+
+    // 
+    // d.drawText(1,1,"Avatar");
+    // let a = this._mode.play.getAvatar();
+    // if (! a) {
+    //   return;
     // }
+    // d.drawText(3,2,`loc: ${a.getxcy()}`);
+    // d.drawText(3,3,`trn: ${a.getTime()}`);
   },
 
   renderDisplayMain: function() {
