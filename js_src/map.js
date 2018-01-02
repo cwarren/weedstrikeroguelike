@@ -4,6 +4,7 @@ import ROT from 'rot-js';
 import {uniqueId,init2DArray} from './util.js';
 import {TILES} from './tile.js';
 import {DATASTORE} from './datastore.js';
+import {EntityFactory} from './entities.js';
 
 class Map {
   constructor(xdim=1,ydim=1, mapType) {
@@ -19,6 +20,7 @@ class Map {
     this.attr.rngBaseState = this.rng.getState();
     this.attr.entityIdToLocation = {};
     this.attr.locationToEntityId = {};
+    this.wallDamager = EntityFactory.create('jaggedprotrusion');
   }
   
   setUp() {
@@ -104,7 +106,8 @@ class Map {
   getMapDataAt(x,y) {
     let d = {
       entity: false,
-      tile: this.getTile(x,y)
+      tile: this.getTile(x,y),
+      wallDamager: this.wallDamager
     }
     if (this.attr.locationToEntityId[`${x},${y}`]) {
       d.e = DATASTORE.ENTITIES[this.attr.locationToEntityId[`${x},${y}`]];

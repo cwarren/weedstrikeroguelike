@@ -268,10 +268,10 @@ export class UIModePlay extends UIMode {
      
       if (avatarMoved) {
         this.syncCameraToAvatar();
-        this.render();
       }
       
     }
+    this.render();
   }
   
   syncCameraToAvatar() {

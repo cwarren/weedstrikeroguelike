@@ -1,3 +1,4 @@
+import ROT from 'rot-js';
 import {Message} from './message.js';
 
 // chunks of functionality that can be added to entity instances
@@ -44,13 +45,16 @@ export let PlayerMessager = {
     'movementBlocked': function(evtData) {
       Message.send(`${this.getName()} cannot move there because ${evtData.reasonBlocked}`);
     },
-    'damaged': function(evtData) { // handler for 'eventLabel' events
+    'damaged': function(evtData) {
       Message.send(`${this.getName()} took ${evtData.damageAmt} from ${evtData.damageSrc.getName()}`);
     },
-    'killed': function(evtData) { // handler for 'eventLabel' events
+    'healed': function(evtData) {
+      Message.send(`${this.getName()} healed ${evtData.healAmt} from ${evtData.healSrc.getName()}`);
+    },
+    'killed': function(evtData) {
       Message.send(`${this.getName()} killed by ${evtData.killer.getName()}`);
     },
-    'kills': function(evtData) { // handler for 'eventLabel' events
+    'kills': function(evtData) {
       Message.send(`${this.getName()} kills ${evtData.kills.getName()}`);
     }
   }
@@ -74,6 +78,11 @@ export let WalkerCorporeal = {
       }
       if (md.tile.isImpassable()) {
         this.raiseMixinEvent('movementBlocked',{'reasonBlocked':'the space is impassable'});
+        if (ROT.RNG.getUniform() < .5) {
+          this.raiseMixinEvent('damaged',{'damageAmt': 1, 'damageSrc': md.wallDamager});
+          this.raiseMixinEvent('turnTaken',{'turnAction':'bumped wall'});
+          return true;
+        }
         return false;
       }
       this.getMap().moveEntityTo(this,newx,newy);
