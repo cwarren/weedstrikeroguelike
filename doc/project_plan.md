@@ -7,7 +7,7 @@ This is the project plan for Weed Strike. This covers general planning thoughts 
   1. which age out as turn are taken
   1. old ones are visible via a separate UI mode
   1. message log persisted
-1. basic combat
+1. basic combat & entities
   1. get rid of the jagged protrusion entity that was used to test avatar HP loss
   1. multiple entities on the map
   1. melee attacker mixin
