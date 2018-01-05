@@ -11,7 +11,9 @@ EntityFactory.learn({
   chr: '@',
   fg: '#ee1',
   maxHp: 10,
-  mixins: ["PlayerMessager","WalkerCorporeal","TimeTracker","HitPoints"]
+  meleeHit: 3,
+  meleeDamage: 2,
+  mixins: ["PlayerMessager","WalkerCorporeal","TimeTracker","HitPoints","AttackerMelee"]
 });
 
 EntityFactory.learn({

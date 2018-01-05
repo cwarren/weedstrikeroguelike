@@ -1,5 +1,6 @@
 import ROT from 'rot-js';
 import {Message} from './message.js';
+import * as U from './util.js';
 
 // chunks of functionality that can be added to entity instances
 
@@ -42,8 +43,11 @@ export let PlayerMessager = {
     'movementBlocked': function(evtData) {
       Message.send(`${this.getName()} cannot move there because ${evtData.reasonBlocked}`);
     },
-    'damaged': function(evtData) {
+    'damagedBy': function(evtData) {
       Message.send(`${this.getName()} took ${evtData.damageAmt} from ${evtData.damageSrc.getName()}`);
+    },
+    'damages': function(evtData) {
+      Message.send(`${this.getName()} dealt ${evtData.damageAmt} to ${evtData.target.getName()}`);
     },
     'healed': function(evtData) {
       Message.send(`${this.getName()} healed ${evtData.healAmt} from ${evtData.healSrc.getName()}`);
@@ -69,9 +73,9 @@ export let WalkerCorporeal = {
       let newx = this.getx()+dx;
       let newy = this.gety()+dy;
       let md = this.getMap().getMapDataAt(newx,newy);
-      if (md.entity) { // NOTE: this is entity interaction! later will be combat (or other?)
-        this.raiseMixinEvent('movementBlocked',{'reasonBlocked':'the space is occupied'});
-        return false;
+      if (md.entity) {
+        let bumpRes = this.raiseMixinEvent('bumpEntity',{'target':md.entity});
+        return U.collapseArrayByOr(bumpRes.acted);
       }
       if (md.tile.isImpassable()) {
         this.raiseMixinEvent('movementBlocked',{'reasonBlocked':'the space is impassable'});
@@ -152,12 +156,58 @@ export let HitPoints = {
     }
   },
   LISTENERS: {
-    'damaged': function(evtData) { // handler for 'eventLabel' events
+    'damagedBy': function(evtData) { // handler for 'eventLabel' events
       this.loseHp(evtData.damageAmt);
+      evtData.damageSrc.raiseMixinEvent('damages',{'target':this,'damageAmt':evtData.damageAmt})
       if (this.attr._HitPoints.curHp <= 0) {
         this.raiseMixinEvent("killed",{'killer':evtData.damageSrc});
         evtData.damageSrc.raiseMixinEvent("kills",{'kills':this});
       }
+    },
+    'killed': function(evtData) {
+      console.log(this.getName()+' killed');
     }
   }
 }
+
+//############################################################
+
+export let AttackerMelee = {
+  META: {
+    mixinName: 'AttackerMelee',
+    mixinGroup: 'BumpActivated',
+    stateNamespace: '_AttackerMelee', 
+    stateModel: {
+      meleeHit: 0,
+      meleeDamage: 0
+    },
+    init: function(template) {
+      this.attr._AttackerMelee.meleeHit = template.meleeHit || 1;
+      this.attr._AttackerMelee.meleeDamage = template.meleeDamage || 1;
+    }
+  },
+  METHODS: {
+    getMeleeHit: function() {
+      return this.attr._AttackerMelee.meleeHit;
+    },
+    setMeleeHit: function(h) {
+      this.attr._AttackerMelee.meleeHit = h;
+    },
+    getMeleeDamage: function() {
+      return this.attr._AttackerMelee.meleeDamage;
+    },
+    setMeleeDamage: function(d) {
+      this.attr._AttackerMelee.meleeDamage = d;
+    },
+  },
+  LISTENERS: {
+    'bumpEntity': function(evtData) {
+      // NOTE: no to-hit calc yet
+      let evtResp = {'acted': true};
+      evtData.target.raiseMixinEvent('damagedBy',{'damageSrc': this, 'damageAmt':this.getMeleeDamage()});
+      return evtResp;
+    }
+  }
+}
+
+//############################################################

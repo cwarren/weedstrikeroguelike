@@ -29,3 +29,11 @@ export function init2DArray(x=1,y=1,initVal='') {
   }
   return a;
 }
+
+export function collapseArrayByOr(ar) {
+  let res = false;
+  for (let i=0;i<ar.length;i++) {
+    res = res || ar[i];
+  }
+  return res;
+}

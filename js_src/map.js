@@ -108,7 +108,7 @@ class Map {
       tile: this.getTile(x,y)
     }
     if (this.attr.locationToEntityId[`${x},${y}`]) {
-      d.e = DATASTORE.ENTITIES[this.attr.locationToEntityId[`${x},${y}`]];
+      d.entity = DATASTORE.ENTITIES[this.attr.locationToEntityId[`${x},${y}`]];
     }
     return d;
   }
