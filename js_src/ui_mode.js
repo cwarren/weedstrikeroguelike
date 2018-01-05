@@ -145,7 +145,6 @@ export class UIModePersistence extends UIMode {
     
     // restore game core
     DATASTORE.GAME = this.game;
-    this.game.fromJSON(savedState.GAME);
     DATASTORE.ID_SEQ = savedState.ID_SEQ;
 
     // restore maps (note: in the future might not instantiate all maps here, but instead build some kind of instantiate on demand)
@@ -158,10 +157,10 @@ export class UIModePersistence extends UIMode {
       let entState = JSON.parse(savedState.ENTITIES[savedEntityId]);
       EntityFactory.create(entState.templateName,entState);
     }
-    
-    // console.log('restored DATASTORE:');
-    // console.dir(DATASTORE);
-    
+
+    // restore play state
+    this.game.fromJSON(savedState.GAME);
+
     Message.send("Game loaded");
     this.game.switchMode('play');
   }
@@ -187,18 +186,18 @@ export class UIModePersistence extends UIMode {
 export class UIModePlay extends UIMode {
   enter() {
     super.enter();
-    // Message.clear();
     this.game.isPlaying = true;
   }
   
   startNewGame() {
-    let a = EntityFactory.create('avatar');
+    let av = EntityFactory.create('avatar');
+    this.cachedAvatar = av; // to have the avatar still available after it's been destroyed (e.g. when reduced to <= 0 hp)
     let m = makeMap({xdim:60,ydim:20});
-    a.setpos(m.getUnblockedPerimeterLocation());
-    m.addEntity(a);
+    av.setpos(m.getUnblockedPerimeterLocation());
+    m.addEntity(av);
 
     this.attr = {};
-    this.attr.avatarId = a.getId();
+    this.attr.avatarId = av.getId();
     this.attr.curMapId = m.getId();
     this.attr.cameraMapLoc = {};
     this.syncCameraToAvatar();
@@ -226,11 +225,13 @@ export class UIModePlay extends UIMode {
   }
 
   renderAvatarOn(display) {
-    let av = this.getAvatar();
-    var y = 0;
+    let av = this.cachedAvatar;
+    if (! av) { return; }
+    let y = 0;
     y += display.drawText(1,y,Color.DEFAULT+"LIFE: "+av.getCurHp()+"/"+av.getMaxHp());
     y++;
     y += display.drawText(1,y,Color.DEFAULT+"TIME: "+av.getTimeTaken());
+    y += display.drawText(1,y,Color.DEFAULT+"KILLS: "+av.getNumKills());
   }
   
   render() {
@@ -238,19 +239,25 @@ export class UIModePlay extends UIMode {
       this.attr.cameraMapLoc.x,this.attr.cameraMapLoc.y);
   }
 
+  checkGameWinLose() {
+    let av = this.cachedAvatar;
+    if (! av) { return; }
+    if (av.isDestroyed) {
+      Message.send("You lose :(");
+      this.game.switchMode('lose');
+    }
+    else if (av.getNumKills() > 5) {
+      Message.send("You WIN!!!");
+      this.game.switchMode('win');
+    }
+  }
+
   handleInput(inputType,inputData) {
     // super.handleInput(inputType,inputData);
     if (inputType == 'keyup') {
       let avatarMoved = false;
 
-      // Message.send(`you pressed the ${inputData.key} key`);
-      if (inputData.key == 'w') {
-        this.game.switchMode('win');
-      }
-      else if (inputData.key == 'l') {
-        this.game.switchMode('lose');
-      }
-      else if (inputData.key == '=') {
+      if (inputData.key == '=') {
         this.game.switchMode('persistence');
         return false;
       }
@@ -291,14 +298,19 @@ export class UIModePlay extends UIMode {
       if (avatarMoved) {
         this.syncCameraToAvatar();
       }
+      
+      this.checkGameWinLose();
+
       return true;
     }
     return false;
   }
   
   syncCameraToAvatar() {
-    this.attr.cameraMapLoc.x = DATASTORE.ENTITIES[this.attr.avatarId].getx();
-    this.attr.cameraMapLoc.y = DATASTORE.ENTITIES[this.attr.avatarId].gety();
+    let av = this.getAvatar();
+    if (! av || av.isDestroyed) { return; }
+    this.attr.cameraMapLoc.x = av.getx();
+    this.attr.cameraMapLoc.y = av.gety();
   }
   
   toJSON() {
@@ -307,6 +319,7 @@ export class UIModePlay extends UIMode {
   
   fromJSON(json) {
     this.attr = JSON.parse(json);
+    this.cachedAvatar = this.getAvatar();
   }
 }
 

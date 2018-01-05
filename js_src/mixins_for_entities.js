@@ -119,6 +119,29 @@ export let TimeTracker = {
 
 //############################################################
 
+export let KillTracker = {
+  META: {
+    mixinName: 'KillTracker',
+    mixinGroup: 'Chronicle',
+    stateNamespace: '_KillTracker',
+    stateModel: {
+      killCounter: 0
+    }
+  },
+  METHODS: {
+    getNumKills: function() {
+      return this.attr._KillTracker.killCounter;
+    }
+  },
+  LISTENERS: {
+    'kills': function(evtData) {
+      this.attr._KillTracker.killCounter++;
+    }
+  }
+};
+
+//############################################################
+
 export let HitPoints = {
   META: {
     mixinName: 'HitPoints',
@@ -165,39 +188,40 @@ export let HitPoints = {
       }
     },
     'killed': function(evtData) {
-      console.log(this.getName()+' killed');
+      // console.log(this.getName()+' killed');
+      this.destroy();
     }
   }
 }
 
 //############################################################
 
-export let AttackerMelee = {
+export let MeleeAttacker = {
   META: {
-    mixinName: 'AttackerMelee',
+    mixinName: 'MeleeAttacker',
     mixinGroup: 'BumpActivated',
-    stateNamespace: '_AttackerMelee', 
+    stateNamespace: '_MeleeAttacker', 
     stateModel: {
       meleeHit: 0,
       meleeDamage: 0
     },
     init: function(template) {
-      this.attr._AttackerMelee.meleeHit = template.meleeHit || 1;
-      this.attr._AttackerMelee.meleeDamage = template.meleeDamage || 1;
+      this.attr._MeleeAttacker.meleeHit = template.meleeHit || 1;
+      this.attr._MeleeAttacker.meleeDamage = template.meleeDamage || 1;
     }
   },
   METHODS: {
     getMeleeHit: function() {
-      return this.attr._AttackerMelee.meleeHit;
+      return this.attr._MeleeAttacker.meleeHit;
     },
     setMeleeHit: function(h) {
-      this.attr._AttackerMelee.meleeHit = h;
+      this.attr._MeleeAttacker.meleeHit = h;
     },
     getMeleeDamage: function() {
-      return this.attr._AttackerMelee.meleeDamage;
+      return this.attr._MeleeAttacker.meleeDamage;
     },
     setMeleeDamage: function(d) {
-      this.attr._AttackerMelee.meleeDamage = d;
+      this.attr._MeleeAttacker.meleeDamage = d;
     },
   },
   LISTENERS: {
@@ -205,7 +229,45 @@ export let AttackerMelee = {
       // NOTE: no to-hit calc yet
       let evtResp = {'acted': true};
       evtData.target.raiseMixinEvent('damagedBy',{'damageSrc': this, 'damageAmt':this.getMeleeDamage()});
+      evtData.target.raiseMixinEvent('meleeAttackedBy',{'attacker': this});
       return evtResp;
+    }
+  }
+}
+
+//############################################################
+
+export let MeleeThorns = {
+  META: {
+    mixinName: 'MeleeThorns',
+    mixinGroup: 'BumpedActivated',
+    stateNamespace: '_MeleeThorns', 
+    stateModel: {
+      meleeThornHit: 0,
+      meleeThornDamage: 0
+    },
+    init: function(template) {
+      this.attr._MeleeThorns.meleeThornHit = template.meleeThornHit || 1;
+      this.attr._MeleeThorns.meleeThornDamage = template.meleeThornDamage || 1;
+    }
+  },
+  METHODS: {
+    getMeleeThornHit: function() {
+      return this.attr._MeleeThorns.meleeThornHit;
+    },
+    setMeleeThornHit: function(h) {
+      this.attr._MeleeThorns.meleeThornHit = h;
+    },
+    getMeleeThornDamage: function() {
+      return this.attr._MeleeThorns.meleeThornDamage;
+    },
+    setMeleeThornDamage: function(d) {
+      this.attr._MeleeThorns.meleeThornDamage = d;
+    },
+  },
+  LISTENERS: {
+    'meleeAttackedBy': function(evtData) {
+      evtData.attacker.raiseMixinEvent('damagedBy',{'damageSrc': this, 'damageAmt':this.getMeleeThornDamage()});
     }
   }
 }

@@ -13,7 +13,7 @@ EntityFactory.learn({
   maxHp: 10,
   meleeHit: 3,
   meleeDamage: 2,
-  mixins: ["PlayerMessager","WalkerCorporeal","TimeTracker","HitPoints","AttackerMelee"]
+  mixins: ["PlayerMessager","WalkerCorporeal","TimeTracker","KillTracker","HitPoints","MeleeAttacker"]
 });
 
 EntityFactory.learn({
@@ -32,4 +32,14 @@ EntityFactory.learn({
   fg: '#7d6',
   maxHp: 10,
   mixins: ["HitPoints"]
+});
+
+EntityFactory.learn({
+  templateName: 'briar',
+  descr: 'a sharp, twisty, windy mess',
+  chr: '#',
+  fg: '#7d6',
+  maxHp: 10,
+  meleeThornDamage: 3,
+  mixins: ["HitPoints","MeleeThorns"]
 });

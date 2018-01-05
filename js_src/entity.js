@@ -13,6 +13,7 @@ export class Entity extends MixableSymbol {
     this.attr.x = template.x || 1;
     this.attr.y = template.y || 1;
     this.attr.mapId = '';
+    this.isDestroyed = false;
   }
 
   getMapId() { return this.attr.mapId;}
@@ -36,14 +37,11 @@ export class Entity extends MixableSymbol {
     }
   }
 
-  // moveBy(dx,dy) {
-  //   if (! this.attr.mapId) {
-  //     this.attr.x += dx;
-  //     this.attr.y += dy;
-  //     return true;
-  //   }
-  //   return DATASTORE.MAPS[this.attr.mapId].moveEntityTo(this,this.attr.x + dx,this.attr.y + dy);
-  // }
+  destroy() {
+    this.getMap().removeEntity(this);
+    delete DATASTORE.ENTITIES[this.getId()];
+    this.isDestroyed = true;
+  }
   
   toJSON() {
     return JSON.stringify(this.attr);
