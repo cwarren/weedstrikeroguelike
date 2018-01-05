@@ -3,8 +3,7 @@
 This is the project plan for Weed Strike. This covers general planning thoughts in addition to tasks and milestones. This is NOT a design document for the game.
 
 1. better message system
-  1. old ones are visible via a separate UI mode
-  1. message log persisted
+  1. SKIP THIS- message log persisted
 1. basic combat & entities
   1. get rid of the jagged protrusion entity that was used to test avatar HP loss
   1. multiple entities on the map

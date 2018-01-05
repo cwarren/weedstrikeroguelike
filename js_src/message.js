@@ -25,6 +25,19 @@ export let Message = {
       mi++;
     }
   },
+  renderOn: function(display) {
+    // this is a more generic, simple render process, which
+    // skips all the aging stuff
+    display.clear();
+    let y = 0;
+    let mi = 0;
+    let yMax = display.getOptions().height - 1;
+    while (y<yMax && mi<yMax && this._messageQueue[mi])
+    {
+      y += Math.max(1,display.drawText(1,y,this._messageQueue[mi].txt));
+      mi++;
+    }
+  },
   send: function (msg) {
     this._messageQueue.unshift({'txt':msg,'age':0});
     while (this._messageQueue.length > this._maxArchiveSize) {

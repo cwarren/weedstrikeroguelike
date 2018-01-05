@@ -242,6 +242,10 @@ export class UIModePlay extends UIMode {
         this.game.switchMode('persistence');
         return false;
       }
+      else if (inputData.key == 'M') {
+        this.game.switchMode('messages');
+        return false;
+      }
       
       // navigation (keeping in mind that top left is 0,0, so positive y moves you down)
       else if (inputData.key == '1') {
@@ -291,6 +295,26 @@ export class UIModePlay extends UIMode {
   
   fromJSON(json) {
     this.attr = JSON.parse(json);
+  }
+}
+
+//-----------------------------------------------------
+//-----------------------------------------------------
+
+export class UIModeMessages extends UIMode {
+  render() {
+    Message.renderOn(this.display);
+  }
+
+  handleInput(inputType,inputData) {
+    if (inputType == 'keyup') {
+      if (inputData.key == 'Escape') {
+        if (this.game.isPlaying) {
+          this.game.switchMode('play');
+        }
+      }
+      return false;
+    }
   }
 }
 

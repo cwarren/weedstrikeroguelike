@@ -3,7 +3,7 @@
 import ROT from 'rot-js';
 import * as U from './util.js';
 import {Message} from './message.js';
-import {UIModeLaunch, UIModePersistence, UIModePlay, UIModeWin, UIModeLose} from './ui_mode.js';
+import {UIModeLaunch, UIModePersistence, UIModePlay, UIModeMessages, UIModeWin, UIModeLose} from './ui_mode.js';
 import {DATASTORE, initializeDatastore} from './datastore.js';
 
 console.log('ROT is:');
@@ -17,6 +17,7 @@ export let Game = {
     launch: '',
     persistence: '',
     play: '',
+    messages: '',
     win: '',
     lose: ''
   },
@@ -70,6 +71,7 @@ export let Game = {
     this._mode.launch = new UIModeLaunch(this);
     this._mode.persistence = new UIModePersistence(this);
     this._mode.play = new UIModePlay(this);
+    this._mode.messages = new UIModeMessages(this);
     this._mode.win = new UIModeWin(this);
     this._mode.lose = new UIModeLose(this);
   },
