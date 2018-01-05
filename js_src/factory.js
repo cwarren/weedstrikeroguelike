@@ -28,4 +28,8 @@ export class Factory {
     DATASTORE[this.datastoreKey][p.getId()] = p;
     return p;
   }
+  
+  getRandomTemplateName() {
+    return Object.keys(this.templates).random();
+  }
 }

@@ -58,7 +58,7 @@ class Map {
     let rx = Math.trunc(this.rng.getUniform()*this.attr.xdim);
     let ry = Math.trunc(this.rng.getUniform()*this.attr.ydim);
     if (this.testLocationBlocked(rx,ry)) {
-      return this.getRandomWalkableOpenLocation();
+      return this.getRandomUnblockedLocation();
     }
     return {x: rx, y: ry};
   }

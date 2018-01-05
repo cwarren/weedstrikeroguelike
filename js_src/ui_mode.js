@@ -206,6 +206,18 @@ export class UIModePlay extends UIMode {
       x: Math.round(this.display.getOptions().width/2),
       y: Math.round(this.display.getOptions().height/2)
     };
+    
+    // populate the map with some entities (will need a better general approach to this at some point)
+    let i=0;
+    while (i<10) {
+      let t = EntityFactory.getRandomTemplateName();
+      if (t != 'avatar') {
+        i++;
+        let e = EntityFactory.create(t);
+        e.setpos(m.getRandomUnblockedLocation());
+        m.addEntity(e);
+      }
+    }
   }
   
   getAvatar() {
