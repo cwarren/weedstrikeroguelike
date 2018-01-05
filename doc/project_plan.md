@@ -3,8 +3,6 @@
 This is the project plan for Weed Strike. This covers general planning thoughts in addition to tasks and milestones. This is NOT a design document for the game.
 
 1. better message system
-  1. archive/log of messages (queue of size x)
-  1. which age out as turn are taken
   1. old ones are visible via a separate UI mode
   1. message log persisted
 1. basic combat & entities

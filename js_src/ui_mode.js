@@ -32,6 +32,8 @@ class UIMode {
   handleInput(inputType,inputData) { 
     console.log(`UIMode handleInput - ${this.constructor.name}`);
     UIMode.dumpInput(inputType,inputData);
+    // NOTE: returns true if the input caused any game play changes, false otherwise
+    return false;
   }
 
   static dumpInput(inputType,inputData) { 
@@ -67,6 +69,7 @@ export class UIModeLaunch extends UIMode {
     if (inputType == 'keyup' && this.keyPressGate) {
       this.game.switchMode('persistence');
     }
+    return false;
   }
 }
 
@@ -116,6 +119,7 @@ export class UIModePersistence extends UIMode {
           this.game.switchMode('play');
         }
       }
+      return false;
     }
   }
   
@@ -236,6 +240,7 @@ export class UIModePlay extends UIMode {
       }
       else if (inputData.key == '=') {
         this.game.switchMode('persistence');
+        return false;
       }
       
       // navigation (keeping in mind that top left is 0,0, so positive y moves you down)
@@ -270,9 +275,9 @@ export class UIModePlay extends UIMode {
       if (avatarMoved) {
         this.syncCameraToAvatar();
       }
-      
+      return true;
     }
-    this.render();
+    return false;
   }
   
   syncCameraToAvatar() {

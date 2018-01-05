@@ -39,9 +39,6 @@ export let PlayerMessager = {
     mixinGroup: 'PlayerMessager',
   },
   LISTENERS: {
-    'turnTaken': function(evtData) {
-      Message.send(evtData.turnAction);
-    },
     'movementBlocked': function(evtData) {
       Message.send(`${this.getName()} cannot move there because ${evtData.reasonBlocked}`);
     },

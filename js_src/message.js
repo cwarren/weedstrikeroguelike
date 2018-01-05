@@ -10,26 +10,37 @@ export let Message = {
     this._targetDisplay = targetDisplay;
   },
   render: function () {
-    if (! this._targetDisplay) { return; }
-    this._targetDisplay.clear();
+    if (! this._targetDisplay.o) { return; }
+    this._targetDisplay.o.clear();
     let y = 0;
     let mi = 0;
-    while (y<6) {
-      console.log(`y =  ${y}`);
-      y += Math.max(1,this._targetDisplay.drawText(1,y,'%c{'+this._fades[mi]+'}'+
-                                                   (this._messageQueue[mi]||'')+
-                                                   Color.DEFAULT));
+    while (y<this._targetDisplay.h &&
+           mi<this._targetDisplay.h &&
+           this._messageQueue[mi])
+    {
+      if (this._messageQueue[mi].age < this._fades.length) {
+        let msgColor = '%c{'+this._fades[this._messageQueue[mi].age]+'}';
+        y += Math.max(1,this._targetDisplay.o.drawText(1,y,`${msgColor}${this._messageQueue[mi].txt}${Color.DEFAULT}`));
+      }
       mi++;
     }
   },
   send: function (msg) {
-    this._messageQueue.unshift(msg);
+    this._messageQueue.unshift({'txt':msg,'age':0});
     while (this._messageQueue.length > this._maxArchiveSize) {
       this._messageQueue.pop();
     }
-    this.render();
   },
   clear: function () {
     this._messageQueue = '';
+  },
+  ageMessages: function() {
+    for (let i=0;i<10;i++) {
+      if (this._messageQueue[i] && this._messageQueue[i].age < this._fades.length) {
+        this._messageQueue[i].age++;
+      }
+    }
   }
 };
+console.log('Message:');
+console.dir(Message);

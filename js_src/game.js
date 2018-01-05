@@ -54,7 +54,7 @@ export let Game = {
     this._setupDisplays();
     this._setupUIModes();
 
-    Message.init(this.getDisplay('message'));
+    Message.init(this._display.message);
     
     this.switchMode('launch');
   },
@@ -141,8 +141,10 @@ export let Game = {
   eventHandler: function (eventType, evt) {
     // When an event is received have the current ui handle it
     if (this._curMode !== null && this._curMode != '') {
-        this._curMode.handleInput(eventType, evt);
+      if (this._curMode.handleInput(eventType, evt)) {
         this.render();
+        Message.ageMessages();
+      }
     }
   },
 
