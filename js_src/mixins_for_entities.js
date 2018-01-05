@@ -75,11 +75,6 @@ export let WalkerCorporeal = {
       }
       if (md.tile.isImpassable()) {
         this.raiseMixinEvent('movementBlocked',{'reasonBlocked':'the space is impassable'});
-        if (ROT.RNG.getUniform() < .5) {
-          this.raiseMixinEvent('damaged',{'damageAmt': 1, 'damageSrc': md.wallDamager});
-          this.raiseMixinEvent('turnTaken',{'turnAction':'bumped wall'});
-          return true;
-        }
         return false;
       }
       this.getMap().moveEntityTo(this,newx,newy);

@@ -13,10 +13,3 @@ EntityFactory.learn({
   maxHp: 10,
   mixins: ["PlayerMessager","WalkerCorporeal","TimeTracker","HitPoints"]
 });
-
-EntityFactory.learn({
-  templateName: 'jaggedprotrusion',
-  name: 'a jagged protrusion',
-  descr: 'a sharp point of rock  which damages anything that walks into a wall',
-  chr: '^'
-});

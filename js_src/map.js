@@ -20,7 +20,6 @@ class Map {
     this.attr.rngBaseState = this.rng.getState();
     this.attr.entityIdToLocation = {};
     this.attr.locationToEntityId = {};
-    this.wallDamager = EntityFactory.create('jaggedprotrusion');
   }
   
   setUp() {
@@ -106,8 +105,7 @@ class Map {
   getMapDataAt(x,y) {
     let d = {
       entity: false,
-      tile: this.getTile(x,y),
-      wallDamager: this.wallDamager
+      tile: this.getTile(x,y)
     }
     if (this.attr.locationToEntityId[`${x},${y}`]) {
       d.e = DATASTORE.ENTITIES[this.attr.locationToEntityId[`${x},${y}`]];
