@@ -191,6 +191,7 @@ export class UIModePlay extends UIMode {
   enter() {
     super.enter();
     this.game.isPlaying = true;
+    setKeyBinding('play');
   }
   
   startNewGame() {
@@ -258,56 +259,54 @@ export class UIModePlay extends UIMode {
 
   handleInput(inputType,inputData) {
     // super.handleInput(inputType,inputData);
-    if (inputType == 'keyup') {
-      let avatarMoved = false;
+    let gameCommand = getCommandFromInput(inputType,inputData);
+    if (gameCommand == COMMAND.NULLCOMMAND) { return false; }
 
-      if (inputData.key == '=') {
-        this.game.switchMode('persistence');
-        return false;
-      }
-      else if (inputData.key == 'M') {
-        this.game.switchMode('messages');
-        return false;
-      }
-      
-      // navigation (keeping in mind that top left is 0,0, so positive y moves you down)
-      else if (inputData.key == '1') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,1);
-      }
-      else if (inputData.key == '2') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(0,1);
-      }
-      else if (inputData.key == '3') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,1);
-      }
-      else if (inputData.key == '4') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,0);
-      }
-      else if (inputData.key == '5') {
-        DATASTORE.ENTITIES[this.attr.avatarId].raiseMixinEvent('turnTaken',{'turnAction':'wait'});
-      }
-      else if (inputData.key == '6') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,0);
-      }
-      else if (inputData.key == '7') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,-1);
-      }
-      else if (inputData.key == '8') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(0,-1);
-      }
-      else if (inputData.key == '9') {
-        avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,-1);
-      }
-     
-      if (avatarMoved) {
-        this.syncCameraToAvatar();
-      }
-      
-      this.checkGameWinLose();
-
-      return true;
+    if (gameCommand == COMMAND.GAME_CONTROLS) {
+      this.game.switchMode('persistence');
+      return false;      
     }
-    return false;
+    
+    if (gameCommand == COMMAND.MESSAGES) {
+      this.game.switchMode('messages');
+      return false;      
+    }
+
+    let avatarMoved = false;
+    if (gameCommand == COMMAND.MOVE_UL) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,-1);
+    } else
+    if (gameCommand == COMMAND.MOVE_U) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(0,-1);
+    } else
+    if (gameCommand == COMMAND.MOVE_UR) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,-1);
+    } else
+    if (gameCommand == COMMAND.MOVE_L) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,0);
+    } else
+    if (gameCommand == COMMAND.MOVE_WAIT) {
+      DATASTORE.ENTITIES[this.attr.avatarId].raiseMixinEvent('turnTaken',{'turnAction':'wait'});
+    } else
+    if (gameCommand == COMMAND.MOVE_R) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,0);
+    } else
+    if (gameCommand == COMMAND.MOVE_DL) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,1);
+    } else
+    if (gameCommand == COMMAND.MOVE_D) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(0,1);
+    } else
+    if (gameCommand == COMMAND.MOVE_DR) {
+      avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,1);
+    }
+    
+    if (avatarMoved) {
+      this.syncCameraToAvatar();
+    }
+    
+    this.checkGameWinLose();
+    return true;
   }
   
   syncCameraToAvatar() {

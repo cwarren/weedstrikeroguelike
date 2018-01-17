@@ -68,6 +68,19 @@ let KEY_BINDINGS = {
                 'key:S,altKey:false,ctrlKey:false,shiftKey:true'],
     'LOAD_GAME': ['key:l,altKey:false,ctrlKey:false,shiftKey:false',
                 'key:L,altKey:false,ctrlKey:false,shiftKey:true'],
+  },
+  'play': {
+    'GAME_CONTROLS':['key:=,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MESSAGES':     ['key:M,altKey:false,ctrlKey:false,shiftKey:true'],
+    'MOVE_UL':  ['key:7,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_U':   ['key:8,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_UR':  ['key:9,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_L':   ['key:4,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_WAIT':['key:5,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_R':   ['key:6,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_DL':  ['key:1,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_D':   ['key:2,altKey:false,ctrlKey:false,shiftKey:false'],
+    'MOVE_DR':  ['key:3,altKey:false,ctrlKey:false,shiftKey:false']
   }
 };
 
