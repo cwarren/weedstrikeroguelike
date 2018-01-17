@@ -71,7 +71,9 @@ let KEY_BINDINGS = {
   },
   'play': {
     'GAME_CONTROLS':['key:=,altKey:false,ctrlKey:false,shiftKey:false'],
-    'MESSAGES':     ['key:M,altKey:false,ctrlKey:false,shiftKey:true'],
+    'MESSAGES':     ['key:M,altKey:false,ctrlKey:false,shiftKey:true']
+  },
+  'movement_numpad': {
     'MOVE_UL':  ['key:7,altKey:false,ctrlKey:false,shiftKey:false'],
     'MOVE_U':   ['key:8,altKey:false,ctrlKey:false,shiftKey:false'],
     'MOVE_UR':  ['key:9,altKey:false,ctrlKey:false,shiftKey:false'],

@@ -191,7 +191,7 @@ export class UIModePlay extends UIMode {
   enter() {
     super.enter();
     this.game.isPlaying = true;
-    setKeyBinding('play');
+    setKeyBinding(['play','movement_numpad']);
   }
   
   startNewGame() {
