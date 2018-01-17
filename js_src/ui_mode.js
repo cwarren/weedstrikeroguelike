@@ -7,6 +7,7 @@ import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
 import {DATASTORE,initializeDatastore} from './datastore.js';
 import {EntityFactory} from './entities.js';
+import {COMMAND,getCommandFromInput,setKeyBinding} from './commands.js';
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -82,6 +83,7 @@ export class UIModePersistence extends UIMode {
     if (window.localStorage.getItem(this.game._PERSISTANCE_NAMESPACE)) {
       this.game.hasSaved = true;
     }
+    setKeyBinding('persistence');
   }
   
   render() {
@@ -98,29 +100,31 @@ export class UIModePersistence extends UIMode {
 
   handleInput(inputType,inputData) {
     // super.handleInput(inputType,inputData);
-    if (inputType == 'keyup') {
-      if (inputData.key == 'n' || inputData.key == 'N') {
-        this.game.startNewGame();
-        Message.send("New game started");
+    // console.log("command is "+getCommandFromInput(inputType,inputData));
+    let gameCommand = getCommandFromInput(inputType,inputData);
+    if (gameCommand == COMMAND.NULLCOMMAND) { return false; }
+    
+    if (gameCommand == COMMAND.NEW_GAME) {
+      this.game.startNewGame();
+      Message.send("New game started");
+      this.game.switchMode('play');
+    } else 
+    if (gameCommand == COMMAND.SAVE_GAME) {
+      if (this.game.isPlaying) {
+        this.handleSaveGame();
+      }
+    } else
+    if (gameCommand == COMMAND.LOAD_GAME) {
+      if (this.game.hasSaved) {
+        this.handleRestoreGame();
+      }
+    } else
+    if (gameCommand == COMMAND.CANCEL) {
+      if (this.game.isPlaying) {
         this.game.switchMode('play');
       }
-      else if (inputData.key == 's' || inputData.key == 'S') {
-        if (this.game.isPlaying) {
-          this.handleSaveGame();
-        }
-      }
-      else if (inputData.key == 'l' || inputData.key == 'L') {
-        if (this.game.hasSaved) {
-          this.handleRestoreGame();
-        }
-      }
-      else if (inputData.key == 'Escape') {
-        if (this.game.isPlaying) {
-          this.game.switchMode('play');
-        }
-      }
-      return false;
     }
+    return false;
   }
   
   handleSaveGame() {
