@@ -51,6 +51,8 @@ export let Game = {
   init: function() {
     console.log("Game object:");
     console.dir(Game);  
+    console.log("DATASTORE:");
+    console.dir(DATASTORE);  
 
     this._setupDisplays();
     this._setupUIModes();
