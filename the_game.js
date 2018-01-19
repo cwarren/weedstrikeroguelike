@@ -15218,6 +15218,8 @@ var Game = exports.Game = {
   init: function init() {
     console.log("Game object:");
     console.dir(Game);
+    console.log("DATASTORE:");
+    console.dir(_datastore.DATASTORE);
 
     this._setupDisplays();
     this._setupUIModes();
