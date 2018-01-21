@@ -9563,9 +9563,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.EntityFactory = undefined;
 
-var _entity = __webpack_require__(340);
+var _entity = __webpack_require__(341);
 
-var _factory = __webpack_require__(343);
+var _factory = __webpack_require__(344);
 
 // definitions for the various entities in the game
 
@@ -15184,11 +15184,11 @@ var Game = exports.Game = {
     launch: '',
     persistence: '',
     play: '',
-    messages: '',
+    // messages: '',
     win: '',
     lose: ''
   },
-  _curMode: '',
+  _curModeStack: [],
 
   _DISPLAY_SPACING: 1.1,
   _display: {
@@ -15240,7 +15240,7 @@ var Game = exports.Game = {
     this._mode.launch = new _ui_mode.UIModeLaunch(this);
     this._mode.persistence = new _ui_mode.UIModePersistence(this);
     this._mode.play = new _ui_mode.UIModePlay(this);
-    this._mode.messages = new _ui_mode.UIModeMessages(this);
+    // this._mode.messages = new UIModeMessages(this);
     this._mode.win = new _ui_mode.UIModeWin(this);
     this._mode.lose = new _ui_mode.UIModeLose(this);
   },
@@ -15274,28 +15274,19 @@ var Game = exports.Game = {
   renderDisplayAvatar: function renderDisplayAvatar() {
     var d = this._display.avatar.o;
     d.clear();
-    if (this._curMode === null || this._curMode == '') {
+    if (this._curModeStack.length == 0) {
       return;
     } else {
-      this._curMode.renderAvatarOn(d);
+      this._curModeStack[0].renderAvatarOn(d);
     }
-
-    // 
-    // d.drawText(1,1,"Avatar");
-    // let a = this._mode.play.getAvatar();
-    // if (! a) {
-    //   return;
-    // }
-    // d.drawText(3,2,`loc: ${a.getxcy()}`);
-    // d.drawText(3,3,`trn: ${a.getTime()}`);
   },
 
   renderDisplayMain: function renderDisplayMain() {
     this._display.main.o.clear();
-    if (this._curMode === null || this._curMode == '') {
+    if (this._curModeStack.length == 0) {
       return;
     } else {
-      this._curMode.render();
+      this._curModeStack[0].render();
     }
   },
 
@@ -15313,8 +15304,8 @@ var Game = exports.Game = {
 
   eventHandler: function eventHandler(eventType, evt) {
     // When an event is received have the current ui handle it
-    if (this._curMode !== null && this._curMode != '') {
-      if (this._curMode.handleInput(eventType, evt)) {
+    if (this._curModeStack.length > 0) {
+      if (this._curModeStack[0].handleInput(eventType, evt)) {
         this.render();
         _message.Message.ageMessages();
       }
@@ -15330,14 +15321,31 @@ var Game = exports.Game = {
       }
     }
 
-    if (this._curMode !== null && this._curMode != '') {
-      this._curMode.exit();
+    if (this._curModeStack.length > 0) {
+      this.removeAllModeLayers();
+      this._curModeStack[0].exit();
     }
-    this._curMode = newMode;
-    if (this._curMode !== null && this._curMode != '') {
-      this._curMode.enter();
+    this._curModeStack[0] = newMode;
+    this._curModeStack[0].enter();
+    this.render();
+  },
+
+  addModeLayer: function addModeLayer(layer) {
+    this._curModeStack.unshift(layer);
+    this._curModeStack[0].enter();
+    this.render();
+  },
+  removeModeLayer: function removeModeLayer() {
+    if (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
+      this._curModeStack[0].exit();
+      this._curModeStack.shift();
     }
     this.render();
+  },
+  removeAllModeLayers: function removeAllModeLayers() {
+    while (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
+      this.removeModeLayer();
+    }
   },
 
   toJSON: function toJSON() {
@@ -15360,11 +15368,11 @@ var Game = exports.Game = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UIModeLose = exports.UIModeWin = exports.UIModeMessages = exports.UIModePlay = exports.UIModePersistence = exports.UIModeLaunch = undefined;
+exports.UIModeLose = exports.UIModeWin = exports.UIModePlay = exports.UIModePersistence = exports.UIModeLaunch = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // the modes in which a player can interact with the game (the nodes in a state model of the player-game relationship)
 
 var _rotJs = __webpack_require__(50);
 
@@ -15372,7 +15380,9 @@ var _rotJs2 = _interopRequireDefault(_rotJs);
 
 var _message = __webpack_require__(94);
 
-var _map = __webpack_require__(338);
+var _ui_mode_base = __webpack_require__(338);
+
+var _map = __webpack_require__(339);
 
 var _colors = __webpack_require__(95);
 
@@ -15382,76 +15392,15 @@ var _datastore = __webpack_require__(46);
 
 var _entities = __webpack_require__(131);
 
-var _commands = __webpack_require__(344);
+var _commands = __webpack_require__(345);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-//-----------------------------------------------------
-//-----------------------------------------------------
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-var UIMode = function () {
-  function UIMode(gameRef) {
-    _classCallCheck(this, UIMode);
-
-    this.game = gameRef;
-    this.display = this.game.getDisplay("main");
-  }
-
-  _createClass(UIMode, [{
-    key: 'enter',
-    value: function enter() {
-      console.log('UIMode enter - ' + this.constructor.name);
-      // console.log("datastore:");
-      // console.dir(DATASTORE);
-    }
-  }, {
-    key: 'exit',
-    value: function exit() {
-      console.log('UIMode exit - ' + this.constructor.name);
-      // console.log("datastore:");
-      // console.dir(DATASTORE);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      console.log('UIMode render - ' + this.constructor.name);
-    }
-  }, {
-    key: 'renderAvatarOn',
-    value: function renderAvatarOn(display) {
-      return;
-    }
-  }, {
-    key: 'handleInput',
-    value: function handleInput(inputType, inputData) {
-      console.log('UIMode handleInput - ' + this.constructor.name);
-      UIMode.dumpInput(inputType, inputData);
-      // NOTE: returns true if the input caused any game play changes, false otherwise
-      return false;
-    }
-  }, {
-    key: 'toJSON',
-    value: function toJSON() {}
-  }, {
-    key: 'fromJSON',
-    value: function fromJSON() {}
-  }], [{
-    key: 'dumpInput',
-    value: function dumpInput(inputType, inputData) {
-      console.log('inputType: ' + inputType);
-      console.log('inputData:');
-      console.dir(inputData);
-    }
-  }]);
-
-  return UIMode;
-}();
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // the modes in which a player can interact with the game (the nodes in a state model of the player-game relationship)
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -15493,7 +15442,7 @@ var UIModeLaunch = exports.UIModeLaunch = function (_UIMode) {
   }]);
 
   return UIModeLaunch;
-}(UIMode);
+}(_ui_mode_base.UIMode);
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -15514,6 +15463,10 @@ var UIModePersistence = exports.UIModePersistence = function (_UIMode2) {
       if (window.localStorage.getItem(this.game._PERSISTANCE_NAMESPACE)) {
         this.game.hasSaved = true;
       }
+    }
+  }, {
+    key: 'bindCommands',
+    value: function bindCommands() {
       (0, _commands.setKeyBinding)('persistence');
     }
   }, {
@@ -15619,7 +15572,7 @@ var UIModePersistence = exports.UIModePersistence = function (_UIMode2) {
   }]);
 
   return UIModePersistence;
-}(UIMode);
+}(_ui_mode_base.UIMode);
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -15638,6 +15591,10 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
     value: function enter() {
       _get(UIModePlay.prototype.__proto__ || Object.getPrototypeOf(UIModePlay.prototype), 'enter', this).call(this);
       this.game.isPlaying = true;
+    }
+  }, {
+    key: 'bindCommands',
+    value: function bindCommands() {
       (0, _commands.setKeyBinding)(['play', 'movement_numpad']);
     }
   }, {
@@ -15783,47 +15740,42 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
   }]);
 
   return UIModePlay;
-}(UIMode);
+}(_ui_mode_base.UIMode);
 
 //-----------------------------------------------------
 //-----------------------------------------------------
 
-var UIModeMessages = exports.UIModeMessages = function (_UIMode4) {
-  _inherits(UIModeMessages, _UIMode4);
-
-  function UIModeMessages() {
-    _classCallCheck(this, UIModeMessages);
-
-    return _possibleConstructorReturn(this, (UIModeMessages.__proto__ || Object.getPrototypeOf(UIModeMessages)).apply(this, arguments));
-  }
-
-  _createClass(UIModeMessages, [{
-    key: 'render',
-    value: function render() {
-      _message.Message.renderOn(this.display);
-    }
-  }, {
-    key: 'handleInput',
-    value: function handleInput(inputType, inputData) {
-      if (inputType == 'keyup') {
-        if (inputData.key == 'Escape') {
-          if (this.game.isPlaying) {
-            this.game.switchMode('play');
-          }
-        }
-        return false;
-      }
-    }
-  }]);
-
-  return UIModeMessages;
-}(UIMode);
+// export class UIModeMessages extends UIMode {
+//   bindCommands() {
+//     setKeyBinding(['message']);
+//   }
+// 
+//   render() {
+//     Message.renderOn(this.display);
+//   }
+// 
+//   handleInput(inputType,inputData) {
+//     let gameCommand = getCommandFromInput(inputType,inputData);
+//     if (gameCommand == COMMAND.NULLCOMMAND) { return false; }
+// 
+//     if (gameCommand == COMMAND.CANCEL) {
+// 
+//     if (inputType == 'keyup') {
+//       if (inputData.key == 'Escape') {
+//         if (this.game.isPlaying) {
+//           this.game.switchMode('play');
+//         }
+//       }
+//       return false;
+//     }
+//   }
+// }
 
 //-----------------------------------------------------
 //-----------------------------------------------------
 
-var UIModeWin = exports.UIModeWin = function (_UIMode5) {
-  _inherits(UIModeWin, _UIMode5);
+var UIModeWin = exports.UIModeWin = function (_UIMode4) {
+  _inherits(UIModeWin, _UIMode4);
 
   function UIModeWin() {
     _classCallCheck(this, UIModeWin);
@@ -15840,13 +15792,13 @@ var UIModeWin = exports.UIModeWin = function (_UIMode5) {
   }]);
 
   return UIModeWin;
-}(UIMode);
+}(_ui_mode_base.UIMode);
 
 //-----------------------------------------------------
 //-----------------------------------------------------
 
-var UIModeLose = exports.UIModeLose = function (_UIMode6) {
-  _inherits(UIModeLose, _UIMode6);
+var UIModeLose = exports.UIModeLose = function (_UIMode5) {
+  _inherits(UIModeLose, _UIMode5);
 
   function UIModeLose() {
     _classCallCheck(this, UIModeLose);
@@ -15863,10 +15815,97 @@ var UIModeLose = exports.UIModeLose = function (_UIMode6) {
   }]);
 
   return UIModeLose;
-}(UIMode);
+}(_ui_mode_base.UIMode);
 
 /***/ }),
 /* 338 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+//-----------------------------------------------------
+//-----------------------------------------------------
+
+
+var UIMode = exports.UIMode = function () {
+  function UIMode(gameRef) {
+    _classCallCheck(this, UIMode);
+
+    this.game = gameRef;
+    this.display = this.game.getDisplay("main");
+    this.overlay = null;
+  }
+
+  _createClass(UIMode, [{
+    key: "enter",
+    value: function enter() {
+      console.log("UIMode enter - " + this.constructor.name);
+      // console.log("datastore:");
+      // console.dir(DATASTORE);
+      this.bindCommands();
+    }
+  }, {
+    key: "bindCommands",
+    value: function bindCommands() {}
+  }, {
+    key: "exit",
+    value: function exit() {
+      console.log("UIMode exit - " + this.constructor.name);
+      // console.log("datastore:");
+      // console.dir(DATASTORE);
+    }
+  }, {
+    key: "isLayer",
+    value: function isLayer() {
+      return false;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      console.log("UIMode render - " + this.constructor.name);
+    }
+  }, {
+    key: "renderAvatarOn",
+    value: function renderAvatarOn(display) {
+      return;
+    }
+  }, {
+    key: "handleInput",
+    value: function handleInput(inputType, inputData) {
+      console.log("UIMode handleInput - " + this.constructor.name);
+      UIMode.dumpInput(inputType, inputData);
+      // NOTE: returns true if the input caused any game play changes, false otherwise
+      return false;
+    }
+  }, {
+    key: "toJSON",
+    value: function toJSON() {}
+  }, {
+    key: "fromJSON",
+    value: function fromJSON() {}
+  }], [{
+    key: "dumpInput",
+    value: function dumpInput(inputType, inputData) {
+      console.log("inputType: " + inputType);
+      console.log('inputData:');
+      console.dir(inputData);
+    }
+  }]);
+
+  return UIMode;
+}();
+
+/***/ }),
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15886,7 +15925,7 @@ var _rotJs2 = _interopRequireDefault(_rotJs);
 
 var _util = __webpack_require__(65);
 
-var _tile = __webpack_require__(339);
+var _tile = __webpack_require__(340);
 
 var _datastore = __webpack_require__(46);
 
@@ -16150,7 +16189,7 @@ function makeMap(mapData) {
 }
 
 /***/ }),
-/* 339 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16230,7 +16269,7 @@ var TILES = exports.TILES = {
 };
 
 /***/ }),
-/* 340 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16247,7 +16286,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _mixable_symbol = __webpack_require__(341);
+var _mixable_symbol = __webpack_require__(342);
 
 var _datastore = __webpack_require__(46);
 
@@ -16372,7 +16411,7 @@ var Entity = exports.Entity = function (_MixableSymbol) {
 }(_mixable_symbol.MixableSymbol);
 
 /***/ }),
-/* 341 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16387,7 +16426,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _mixins_for_entities = __webpack_require__(342);
+var _mixins_for_entities = __webpack_require__(343);
 
 var E = _interopRequireWildcard(_mixins_for_entities);
 
@@ -16521,7 +16560,7 @@ var MixableSymbol = exports.MixableSymbol = function (_DisplaySymbol) {
 }(_display_symbol.DisplaySymbol);
 
 /***/ }),
-/* 342 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16821,7 +16860,7 @@ var HitPoints = exports.HitPoints = {
 };
 
 /***/ }),
-/* 343 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16882,7 +16921,7 @@ var Factory = exports.Factory = function () {
 }();
 
 /***/ }),
-/* 344 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16981,6 +17020,12 @@ var KEY_BINDINGS = {
     'MOVE_DL': ['key:1,altKey:false,ctrlKey:false,shiftKey:false'],
     'MOVE_D': ['key:2,altKey:false,ctrlKey:false,shiftKey:false'],
     'MOVE_DR': ['key:3,altKey:false,ctrlKey:false,shiftKey:false']
+  },
+  'textnav': {
+    'LINE_UP': ['key:ArrowUp,altKey:false,ctrlKey:false,shiftKey:false'],
+    'LINE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:false'],
+    'PAGE_UP': ['key:ArrowUp,altKey:false,ctrlKey:false,shiftKey:true'],
+    'PAGE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:true']
   }
 };
 

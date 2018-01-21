@@ -2,50 +2,13 @@
 
 import ROT from 'rot-js';
 import {Message} from './message.js';
+import {UIMode} from './ui_mode_base.js';
 import {makeMap} from './map.js';
 import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
 import {DATASTORE,initializeDatastore} from './datastore.js';
 import {EntityFactory} from './entities.js';
 import {COMMAND,getCommandFromInput,setKeyBinding} from './commands.js';
-
-//-----------------------------------------------------
-//-----------------------------------------------------
-
-class UIMode {
-  constructor(gameRef) {
-    this.game = gameRef;
-    this.display = this.game.getDisplay("main");
-  }
-  
-  enter()       {
-    console.log(`UIMode enter - ${this.constructor.name}`);
-  // console.log("datastore:");
-  // console.dir(DATASTORE);
- }
-  exit()        {
-    console.log(`UIMode exit - ${this.constructor.name}`);
-  // console.log("datastore:");
-  // console.dir(DATASTORE);
- }
-  render()      { console.log(`UIMode render - ${this.constructor.name}`); }
-  renderAvatarOn(display) { return; }
-  handleInput(inputType,inputData) { 
-    console.log(`UIMode handleInput - ${this.constructor.name}`);
-    UIMode.dumpInput(inputType,inputData);
-    // NOTE: returns true if the input caused any game play changes, false otherwise
-    return false;
-  }
-
-  static dumpInput(inputType,inputData) { 
-    console.log(`inputType: ${inputType}`);
-    console.log('inputData:');
-    console.dir(inputData);
-  }
-  
-  toJSON() {}
-  fromJSON() {}
-}
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -83,9 +46,11 @@ export class UIModePersistence extends UIMode {
     if (window.localStorage.getItem(this.game._PERSISTANCE_NAMESPACE)) {
       this.game.hasSaved = true;
     }
+  }
+  bindCommands() {
     setKeyBinding('persistence');
   }
-  
+
   render() {
     this.display.drawText(1,1,"Game Control",Color.FG,Color.BG);
     this.display.drawText(5,3,"N - start a new game",Color.FG,Color.BG);
@@ -191,6 +156,8 @@ export class UIModePlay extends UIMode {
   enter() {
     super.enter();
     this.game.isPlaying = true;
+  }
+  bindCommands() {
     setKeyBinding(['play','movement_numpad']);
   }
   
@@ -329,22 +296,31 @@ export class UIModePlay extends UIMode {
 //-----------------------------------------------------
 //-----------------------------------------------------
 
-export class UIModeMessages extends UIMode {
-  render() {
-    Message.renderOn(this.display);
-  }
-
-  handleInput(inputType,inputData) {
-    if (inputType == 'keyup') {
-      if (inputData.key == 'Escape') {
-        if (this.game.isPlaying) {
-          this.game.switchMode('play');
-        }
-      }
-      return false;
-    }
-  }
-}
+// export class UIModeMessages extends UIMode {
+//   bindCommands() {
+//     setKeyBinding(['message']);
+//   }
+// 
+//   render() {
+//     Message.renderOn(this.display);
+//   }
+// 
+//   handleInput(inputType,inputData) {
+//     let gameCommand = getCommandFromInput(inputType,inputData);
+//     if (gameCommand == COMMAND.NULLCOMMAND) { return false; }
+// 
+//     if (gameCommand == COMMAND.CANCEL) {
+// 
+//     if (inputType == 'keyup') {
+//       if (inputData.key == 'Escape') {
+//         if (this.game.isPlaying) {
+//           this.game.switchMode('play');
+//         }
+//       }
+//       return false;
+//     }
+//   }
+// }
 
 //-----------------------------------------------------
 //-----------------------------------------------------

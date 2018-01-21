@@ -83,6 +83,12 @@ let KEY_BINDINGS = {
     'MOVE_DL':  ['key:1,altKey:false,ctrlKey:false,shiftKey:false'],
     'MOVE_D':   ['key:2,altKey:false,ctrlKey:false,shiftKey:false'],
     'MOVE_DR':  ['key:3,altKey:false,ctrlKey:false,shiftKey:false']
+  },
+  'textnav': {
+    'LINE_UP':   ['key:ArrowUp,altKey:false,ctrlKey:false,shiftKey:false'],
+    'LINE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:false'],
+    'PAGE_UP':   ['key:ArrowUp,altKey:false,ctrlKey:false,shiftKey:true'],
+    'PAGE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:true']
   }
 };
 

@@ -17,11 +17,11 @@ export let Game = {
     launch: '',
     persistence: '',
     play: '',
-    messages: '',
+    // messages: '',
     win: '',
     lose: ''
   },
-  _curMode: '',
+  _curModeStack: [],
 
   _DISPLAY_SPACING: 1.1,
   _display: {
@@ -73,7 +73,7 @@ export let Game = {
     this._mode.launch = new UIModeLaunch(this);
     this._mode.persistence = new UIModePersistence(this);
     this._mode.play = new UIModePlay(this);
-    this._mode.messages = new UIModeMessages(this);
+    // this._mode.messages = new UIModeMessages(this);
     this._mode.win = new UIModeWin(this);
     this._mode.lose = new UIModeLose(this);
   },
@@ -107,28 +107,19 @@ export let Game = {
   renderDisplayAvatar: function() {
     let d = this._display.avatar.o;
     d.clear();
-    if (this._curMode === null || this._curMode == '') {
+    if (this._curModeStack.length == 0) {
       return;
     } else {
-      this._curMode.renderAvatarOn(d);
+      this._curModeStack[0].renderAvatarOn(d);
     }
-
-    // 
-    // d.drawText(1,1,"Avatar");
-    // let a = this._mode.play.getAvatar();
-    // if (! a) {
-    //   return;
-    // }
-    // d.drawText(3,2,`loc: ${a.getxcy()}`);
-    // d.drawText(3,3,`trn: ${a.getTime()}`);
   },
 
   renderDisplayMain: function() {
     this._display.main.o.clear();
-    if (this._curMode === null || this._curMode == '') {
+    if (this._curModeStack.length == 0) {
       return;
     } else {
-      this._curMode.render();
+      this._curModeStack[0].render();
     }
   },
   
@@ -144,8 +135,8 @@ export let Game = {
   
   eventHandler: function (eventType, evt) {
     // When an event is received have the current ui handle it
-    if (this._curMode !== null && this._curMode != '') {
-      if (this._curMode.handleInput(eventType, evt)) {
+    if (this._curModeStack.length > 0) {
+      if (this._curModeStack[0].handleInput(eventType, evt)) {
         this.render();
         Message.ageMessages();
       }
@@ -161,14 +152,31 @@ export let Game = {
       }
     }
 
-    if (this._curMode !== null && this._curMode != '') {
-      this._curMode.exit();
+    if (this._curModeStack.length > 0) {
+      this.removeAllModeLayers();
+      this._curModeStack[0].exit();
     }
-    this._curMode = newMode;
-    if (this._curMode !== null && this._curMode != '') {
-      this._curMode.enter();
+    this._curModeStack[0] = newMode;
+    this._curModeStack[0].enter();
+    this.render();
+  },
+  
+  addModeLayer: function(layer) {
+    this._curModeStack.unshift(layer);
+    this._curModeStack[0].enter();
+    this.render();
+  },
+  removeModeLayer: function() {
+    if (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
+      this._curModeStack[0].exit();
+      this._curModeStack.shift();
     }
     this.render();
+  },
+  removeAllModeLayers: function() {
+    while (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
+      this.removeModeLayer();
+    }
   },
   
   toJSON: function() {
