@@ -59,7 +59,7 @@ export let Message = {
     // for (let i = this._messageQueue.length-1; i>=0; i--) {
     //   text += this._messageQueue[i].txt;
     // }
-    text = this._messageQueue.map(function(e){return e.txt;}).reverse().join("\n");
+    text = this._messageQueue.map(function(e){return e.txt;}).join("\n");
     return text;
   }
 };

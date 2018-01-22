@@ -43,51 +43,84 @@ export class UILayer_Text extends UILayer {
       this.game.removeUILayer();
       return false;
     }
+
+    // if (gameCommand == COMMAND.LINE_UP && this.canUseLineUp) {
     if (gameCommand == COMMAND.LINE_UP && this.canUseLineUp) {
-      this.yBase = Math.min(0,this.yBase+1);
-      this.render();
+      // this.yBase = Math.min(0,this.yBase+1);
+      // this.calcNavValidity();
+      this.tryLineUp();
     } else
+    // if (gameCommand == COMMAND.LINE_DOWN && this.canUseLineDown) {
     if (gameCommand == COMMAND.LINE_DOWN && this.canUseLineDown) {
-      this.yBase--;
-      this.render();
+      this.tryLineDown();
+      // this.yBase--;
+      // this.calcNavValidity();
     } else
     if (gameCommand == COMMAND.PAGE_UP) {
       for (let c=0; c<this.yDim;c++) {
-        if (this.canUseLineUp) {
-          this.yBase = Math.min(0,this.yBase+1);
-          this.render();
-        }
+        this.tryLineUp();
+        // if (this.canUseLineUp) {
+        //   this.yBase = Math.min(0,this.yBase+1);
+        //   this.calcNavValidity();
+        // }
       }
     } else
     if (gameCommand == COMMAND.PAGE_DOWN) {
       for (let c=0; c<this.yDim;c++) {
-        if (this.canUseLineDown) {
-          this.yBase--;
-          this.render();
-        }
+        this.tryLineDown();
+        // if (this.canUseLineDown) {
+        //   this.yBase--;
+        //   this.calcNavValidity();
+        // }
       }
     }
+
+    this.render();
     return false;
   }
+  
+  tryLineUp() {
+    this.calcNavValidity();
+    if (this.canUseLineUp) {
+      this.yBase = Math.min(0,this.yBase+1);
+    }
+  }
+  
+  tryLineDown() {
+    this.calcNavValidity();
+    if (this.canUseLineDown) {
+      this.yBase--;
+    }
+  }
+
+  calcNavValidity() {
+    this.linesDrawn = Math.min(this.totalTextLines,this.yDim);
+    let linesAboveFold = this.yBase * -1;
+    let linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
+    this.canUseLineUp = linesAboveFold > 0;
+    this.canUseLineDown = linesBelowFold > 0;
+  }
+  
   render() {
     this.display.clear();
     this.totalTextLines = this.display.drawText(1,this.yBase,this.text,Color.FG,Color.BG);
-    this.linesDrawn = Math.min(this.totalTextLines,this.yDim);
+    // this.linesDrawn = Math.min(this.totalTextLines,this.yDim);
+    // 
+    // // console.log(`lines: ${this.totalTextLines}`);
+    // // console.log(`yBase: ${this.yBase}`);
+    // // console.log(`yDim: ${this.yDim}`);
+    // // console.log(`lines drawn: ${this.linesDrawn}`);
+    // 
+    // let linesAboveFold = this.yBase * -1;
+    // let linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
+    // 
+    // // console.log(`linesAboveFold: ${linesAboveFold}`);
+    // // console.log(`linesBelowFold: ${linesBelowFold}`);
+    // 
+    // this.canUseLineUp = linesAboveFold > 0;
+    // this.canUseLineDown = linesBelowFold > 0;
 
-    // console.log(`lines: ${this.totalTextLines}`);
-    // console.log(`yBase: ${this.yBase}`);
-    // console.log(`yDim: ${this.yDim}`);
-    // console.log(`lines drawn: ${this.linesDrawn}`);
-
-    let linesAboveFold = this.yBase * -1;
-    let linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
-
-    // console.log(`linesAboveFold: ${linesAboveFold}`);
-    // console.log(`linesBelowFold: ${linesBelowFold}`);
-
-    this.canUseLineUp = linesAboveFold > 0;
-    this.canUseLineDown = linesBelowFold > 0;
-
+    this.calcNavValidity();
     if (this.canUseLineUp) {
       this.display.draw(0,0,'\u21d1',Color.BLUE,Color.WHITE);
     }
