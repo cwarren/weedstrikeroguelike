@@ -4,6 +4,9 @@ import {UIMode} from './ui_mode_base.js';
 import {COMMAND,getCommandFromInput,setKeyBinding} from './commands.js';
 import {Color} from './colors.js';
 
+//================================================================
+//================================================================
+
 class UILayer extends UIMode {
   constructor(gameRef, laysOver) {
     super(gameRef);
@@ -16,15 +19,15 @@ class UILayer extends UIMode {
   }
 }
 
-// *******************************
+//================================================================
+//================================================================
 
 export class UILayer_Text extends UILayer {
   constructor(gameRef, laysOver,text) {
     super(gameRef,laysOver);
+    this.yDim = this.display.getOptions().height;
     this.text = text;
     this.yBase = 0;
-    this.yDim = this.display.getOptions().height;
-    this.linesDrawn = 0;
     this.totalTextLines = 0;
     this.canUseLineUp = false;
     this.canUseLineDown = false;
@@ -34,6 +37,11 @@ export class UILayer_Text extends UILayer {
   }
   setText(text) {
     this.text = text;
+    this.yBase = 0;
+    this.totalTextLines = 0;
+    this.canUseLineUp = false;
+    this.canUseLineDown = false;
+    this.render();
   }
   handleInput(inputType,inputData) {
     let gameCommand = getCommandFromInput(inputType,inputData);
@@ -44,37 +52,18 @@ export class UILayer_Text extends UILayer {
       return false;
     }
 
-    // if (gameCommand == COMMAND.LINE_UP && this.canUseLineUp) {
-    if (gameCommand == COMMAND.LINE_UP && this.canUseLineUp) {
-      // this.yBase = Math.min(0,this.yBase+1);
-      // this.calcNavValidity();
+    if (gameCommand == COMMAND.LINE_UP) {
       this.tryLineUp();
     } else
-    // if (gameCommand == COMMAND.LINE_DOWN && this.canUseLineDown) {
-    if (gameCommand == COMMAND.LINE_DOWN && this.canUseLineDown) {
+    if (gameCommand == COMMAND.LINE_DOWN) {
       this.tryLineDown();
-      // this.yBase--;
-      // this.calcNavValidity();
     } else
     if (gameCommand == COMMAND.PAGE_UP) {
-      for (let c=0; c<this.yDim;c++) {
-        this.tryLineUp();
-        // if (this.canUseLineUp) {
-        //   this.yBase = Math.min(0,this.yBase+1);
-        //   this.calcNavValidity();
-        // }
-      }
+      for (let c=0; c<this.yDim;c++) { this.tryLineUp(); }
     } else
     if (gameCommand == COMMAND.PAGE_DOWN) {
-      for (let c=0; c<this.yDim;c++) {
-        this.tryLineDown();
-        // if (this.canUseLineDown) {
-        //   this.yBase--;
-        //   this.calcNavValidity();
-        // }
-      }
+      for (let c=0; c<this.yDim;c++) { this.tryLineDown(); }
     }
-
     this.render();
     return false;
   }
@@ -94,9 +83,9 @@ export class UILayer_Text extends UILayer {
   }
 
   calcNavValidity() {
-    this.linesDrawn = Math.min(this.totalTextLines,this.yDim);
+    let linesDrawn = Math.min(this.totalTextLines,this.yDim);
     let linesAboveFold = this.yBase * -1;
-    let linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
+    let linesBelowFold = this.totalTextLines - linesAboveFold - linesDrawn;
     this.canUseLineUp = linesAboveFold > 0;
     this.canUseLineDown = linesBelowFold > 0;
   }
@@ -104,21 +93,6 @@ export class UILayer_Text extends UILayer {
   render() {
     this.display.clear();
     this.totalTextLines = this.display.drawText(1,this.yBase,this.text,Color.FG,Color.BG);
-    // this.linesDrawn = Math.min(this.totalTextLines,this.yDim);
-    // 
-    // // console.log(`lines: ${this.totalTextLines}`);
-    // // console.log(`yBase: ${this.yBase}`);
-    // // console.log(`yDim: ${this.yDim}`);
-    // // console.log(`lines drawn: ${this.linesDrawn}`);
-    // 
-    // let linesAboveFold = this.yBase * -1;
-    // let linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
-    // 
-    // // console.log(`linesAboveFold: ${linesAboveFold}`);
-    // // console.log(`linesBelowFold: ${linesBelowFold}`);
-    // 
-    // this.canUseLineUp = linesAboveFold > 0;
-    // this.canUseLineDown = linesBelowFold > 0;
 
     this.calcNavValidity();
     if (this.canUseLineUp) {
@@ -129,3 +103,6 @@ export class UILayer_Text extends UILayer {
     }
   }
 }
+
+//================================================================
+//================================================================

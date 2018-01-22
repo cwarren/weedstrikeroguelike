@@ -8556,8 +8556,8 @@ var Message = exports.Message = {
     // for (let i = this._messageQueue.length-1; i>=0; i--) {
     //   text += this._messageQueue[i].txt;
     // }
-    text = this._messageQueue.map(function (e) {
-      return e.txt;
+    text = this._messageQueue.map(function (e, i) {
+      return i + 1 + ': ' + e.txt;
     }).join("\n");
     return text;
   }
@@ -17074,6 +17074,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // interface layers that 'sit on top of' ui modes - e.g. a text display layer, which could show some help text, then revert to whatever the underlying layer or mode is when exited.
 
+//================================================================
+//================================================================
+
 var UILayer = function (_UIMode) {
   _inherits(UILayer, _UIMode);
 
@@ -17102,7 +17105,8 @@ var UILayer = function (_UIMode) {
   return UILayer;
 }(_ui_mode_base.UIMode);
 
-// *******************************
+//================================================================
+//================================================================
 
 var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
   _inherits(UILayer_Text, _UILayer);
@@ -17112,10 +17116,9 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
 
     var _this2 = _possibleConstructorReturn(this, (UILayer_Text.__proto__ || Object.getPrototypeOf(UILayer_Text)).call(this, gameRef, laysOver));
 
+    _this2.yDim = _this2.display.getOptions().height;
     _this2.text = text;
     _this2.yBase = 0;
-    _this2.yDim = _this2.display.getOptions().height;
-    _this2.linesDrawn = 0;
     _this2.totalTextLines = 0;
     _this2.canUseLineUp = false;
     _this2.canUseLineDown = false;
@@ -17131,6 +17134,11 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
     key: 'setText',
     value: function setText(text) {
       this.text = text;
+      this.yBase = 0;
+      this.totalTextLines = 0;
+      this.canUseLineUp = false;
+      this.canUseLineDown = false;
+      this.render();
     }
   }, {
     key: 'handleInput',
@@ -17145,35 +17153,19 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
         return false;
       }
 
-      // if (gameCommand == COMMAND.LINE_UP && this.canUseLineUp) {
-      if (gameCommand == _commands.COMMAND.LINE_UP && this.canUseLineUp) {
-        // this.yBase = Math.min(0,this.yBase+1);
-        // this.calcNavValidity();
+      if (gameCommand == _commands.COMMAND.LINE_UP) {
         this.tryLineUp();
-      } else
-        // if (gameCommand == COMMAND.LINE_DOWN && this.canUseLineDown) {
-        if (gameCommand == _commands.COMMAND.LINE_DOWN && this.canUseLineDown) {
-          this.tryLineDown();
-          // this.yBase--;
-          // this.calcNavValidity();
-        } else if (gameCommand == _commands.COMMAND.PAGE_UP) {
-          for (var c = 0; c < this.yDim; c++) {
-            this.tryLineUp();
-            // if (this.canUseLineUp) {
-            //   this.yBase = Math.min(0,this.yBase+1);
-            //   this.calcNavValidity();
-            // }
-          }
-        } else if (gameCommand == _commands.COMMAND.PAGE_DOWN) {
-          for (var _c = 0; _c < this.yDim; _c++) {
-            this.tryLineDown();
-            // if (this.canUseLineDown) {
-            //   this.yBase--;
-            //   this.calcNavValidity();
-            // }
-          }
+      } else if (gameCommand == _commands.COMMAND.LINE_DOWN) {
+        this.tryLineDown();
+      } else if (gameCommand == _commands.COMMAND.PAGE_UP) {
+        for (var c = 0; c < this.yDim; c++) {
+          this.tryLineUp();
         }
-
+      } else if (gameCommand == _commands.COMMAND.PAGE_DOWN) {
+        for (var _c = 0; _c < this.yDim; _c++) {
+          this.tryLineDown();
+        }
+      }
       this.render();
       return false;
     }
@@ -17196,9 +17188,9 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
   }, {
     key: 'calcNavValidity',
     value: function calcNavValidity() {
-      this.linesDrawn = Math.min(this.totalTextLines, this.yDim);
+      var linesDrawn = Math.min(this.totalTextLines, this.yDim);
       var linesAboveFold = this.yBase * -1;
-      var linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
+      var linesBelowFold = this.totalTextLines - linesAboveFold - linesDrawn;
       this.canUseLineUp = linesAboveFold > 0;
       this.canUseLineDown = linesBelowFold > 0;
     }
@@ -17207,21 +17199,6 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
     value: function render() {
       this.display.clear();
       this.totalTextLines = this.display.drawText(1, this.yBase, this.text, _colors.Color.FG, _colors.Color.BG);
-      // this.linesDrawn = Math.min(this.totalTextLines,this.yDim);
-      // 
-      // // console.log(`lines: ${this.totalTextLines}`);
-      // // console.log(`yBase: ${this.yBase}`);
-      // // console.log(`yDim: ${this.yDim}`);
-      // // console.log(`lines drawn: ${this.linesDrawn}`);
-      // 
-      // let linesAboveFold = this.yBase * -1;
-      // let linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
-      // 
-      // // console.log(`linesAboveFold: ${linesAboveFold}`);
-      // // console.log(`linesBelowFold: ${linesBelowFold}`);
-      // 
-      // this.canUseLineUp = linesAboveFold > 0;
-      // this.canUseLineDown = linesBelowFold > 0;
 
       this.calcNavValidity();
       if (this.canUseLineUp) {
@@ -17235,6 +17212,9 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
 
   return UILayer_Text;
 }(UILayer);
+
+//================================================================
+//================================================================
 
 /***/ })
 /******/ ]);
