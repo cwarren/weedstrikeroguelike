@@ -8553,9 +8553,12 @@ var Message = exports.Message = {
   },
   archivesAsText: function archivesAsText() {
     var text = '';
-    for (var i = this._messageQueue.length - 1; i >= 0; i--) {
-      text += this._messageQueue[i].txt + "\n";
-    }
+    // for (let i = this._messageQueue.length-1; i>=0; i--) {
+    //   text += this._messageQueue[i].txt;
+    // }
+    text = this._messageQueue.map(function (e) {
+      return e.txt;
+    }).reverse().join("\n");
     return text;
   }
 }; // encapsulates sending messages/notes to the player
@@ -8579,6 +8582,9 @@ var Color = exports.Color = {};
 Color.FG = '#fff';
 Color.BG = '#000';
 Color.DEFAULT = '%c{' + Color.FG + '}%b{' + Color.BG + '}';
+Color.RED = '#d00';
+Color.BLUE = '#00d';
+Color.WHITE = '#fff';
 
 /***/ }),
 /* 96 */
@@ -17107,6 +17113,12 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
     var _this2 = _possibleConstructorReturn(this, (UILayer_Text.__proto__ || Object.getPrototypeOf(UILayer_Text)).call(this, gameRef, laysOver));
 
     _this2.text = text;
+    _this2.yBase = 0;
+    _this2.yDim = _this2.display.getOptions().height;
+    _this2.linesDrawn = 0;
+    _this2.totalTextLines = 0;
+    _this2.canUseLineUp = false;
+    _this2.canUseLineDown = false;
     return _this2;
   }
 
@@ -17132,21 +17144,56 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
         this.game.removeUILayer();
         return false;
       }
-      if (gameCommand == _commands.COMMAND.LINE_UP) {
-        ;
-      } else if (gameCommand == _commands.COMMAND.LINE_DOWN) {
-        ;
+      if (gameCommand == _commands.COMMAND.LINE_UP && this.canUseLineUp) {
+        this.yBase = Math.min(0, this.yBase + 1);
+        this.render();
+      } else if (gameCommand == _commands.COMMAND.LINE_DOWN && this.canUseLineDown) {
+        this.yBase--;
+        this.render();
       } else if (gameCommand == _commands.COMMAND.PAGE_UP) {
-        ;
+        for (var c = 0; c < this.yDim; c++) {
+          if (this.canUseLineUp) {
+            this.yBase = Math.min(0, this.yBase + 1);
+            this.render();
+          }
+        }
       } else if (gameCommand == _commands.COMMAND.PAGE_DOWN) {
-        ;
+        for (var _c = 0; _c < this.yDim; _c++) {
+          if (this.canUseLineDown) {
+            this.yBase--;
+            this.render();
+          }
+        }
       }
-      return true;
+      return false;
     }
   }, {
     key: 'render',
     value: function render() {
-      this.display.drawText(1, 1, this.text, _colors.Color.FG, _colors.Color.BG);
+      this.display.clear();
+      this.totalTextLines = this.display.drawText(1, this.yBase, this.text, _colors.Color.FG, _colors.Color.BG);
+      this.linesDrawn = Math.min(this.totalTextLines, this.yDim);
+
+      // console.log(`lines: ${this.totalTextLines}`);
+      // console.log(`yBase: ${this.yBase}`);
+      // console.log(`yDim: ${this.yDim}`);
+      // console.log(`lines drawn: ${this.linesDrawn}`);
+
+      var linesAboveFold = this.yBase * -1;
+      var linesBelowFold = this.totalTextLines - linesAboveFold - this.linesDrawn;
+
+      // console.log(`linesAboveFold: ${linesAboveFold}`);
+      // console.log(`linesBelowFold: ${linesBelowFold}`);
+
+      this.canUseLineUp = linesAboveFold > 0;
+      this.canUseLineDown = linesBelowFold > 0;
+
+      if (this.canUseLineUp) {
+        this.display.draw(0, 0, '\u21D1', _colors.Color.BLUE, _colors.Color.WHITE);
+      }
+      if (this.canUseLineDown) {
+        this.display.draw(0, this.yDim - 1, '\u21D3', _colors.Color.BLUE, _colors.Color.WHITE);
+      }
     }
   }]);
 
