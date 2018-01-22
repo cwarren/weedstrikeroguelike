@@ -153,7 +153,7 @@ export let Game = {
     }
 
     if (this._curModeStack.length > 0) {
-      this.removeAllModeLayers();
+      this.removeAllUILayers();
       this._curModeStack[0].exit();
     }
     this._curModeStack[0] = newMode;
@@ -161,21 +161,21 @@ export let Game = {
     this.render();
   },
   
-  addModeLayer: function(layer) {
+  addUILayer: function(layer) {
     this._curModeStack.unshift(layer);
     this._curModeStack[0].enter();
     this.render();
   },
-  removeModeLayer: function() {
+  removeUILayer: function() {
     if (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
       this._curModeStack[0].exit();
       this._curModeStack.shift();
     }
     this.render();
   },
-  removeAllModeLayers: function() {
+  removeAllUILayers: function() {
     while (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
-      this.removeModeLayer();
+      this.removeUILayer();
     }
   },
   

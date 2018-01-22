@@ -8550,6 +8550,13 @@ var Message = exports.Message = {
         this._messageQueue[i].age++;
       }
     }
+  },
+  archivesAsText: function archivesAsText() {
+    var text = '';
+    for (var i = this._messageQueue.length - 1; i >= 0; i--) {
+      text += this._messageQueue[i].txt + "\n";
+    }
+    return text;
   }
 }; // encapsulates sending messages/notes to the player
 
@@ -15322,7 +15329,7 @@ var Game = exports.Game = {
     }
 
     if (this._curModeStack.length > 0) {
-      this.removeAllModeLayers();
+      this.removeAllUILayers();
       this._curModeStack[0].exit();
     }
     this._curModeStack[0] = newMode;
@@ -15330,21 +15337,21 @@ var Game = exports.Game = {
     this.render();
   },
 
-  addModeLayer: function addModeLayer(layer) {
+  addUILayer: function addUILayer(layer) {
     this._curModeStack.unshift(layer);
     this._curModeStack[0].enter();
     this.render();
   },
-  removeModeLayer: function removeModeLayer() {
+  removeUILayer: function removeUILayer() {
     if (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
       this._curModeStack[0].exit();
       this._curModeStack.shift();
     }
     this.render();
   },
-  removeAllModeLayers: function removeAllModeLayers() {
+  removeAllUILayers: function removeAllUILayers() {
     while (this._curModeStack.length > 0 && this._curModeStack[0].isLayer()) {
-      this.removeModeLayer();
+      this.removeUILayer();
     }
   },
 
@@ -15381,6 +15388,8 @@ var _rotJs2 = _interopRequireDefault(_rotJs);
 var _message = __webpack_require__(94);
 
 var _ui_mode_base = __webpack_require__(338);
+
+var _ui_layer = __webpack_require__(346);
 
 var _map = __webpack_require__(339);
 
@@ -15684,7 +15693,9 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
       }
 
       if (gameCommand == _commands.COMMAND.MESSAGES) {
-        this.game.switchMode('messages');
+        // this.game.switchMode('messages');
+        var messageLayer = new _ui_layer.UILayer_Text(this.game, this, _message.Message.archivesAsText());
+        this.game.addUILayer(messageLayer);
         return false;
       }
 
@@ -17028,6 +17039,119 @@ var KEY_BINDINGS = {
     'PAGE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:true']
   }
 };
+
+/***/ }),
+/* 346 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UILayer_Text = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _ui_mode_base = __webpack_require__(338);
+
+var _commands = __webpack_require__(345);
+
+var _colors = __webpack_require__(95);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // interface layers that 'sit on top of' ui modes - e.g. a text display layer, which could show some help text, then revert to whatever the underlying layer or mode is when exited.
+
+var UILayer = function (_UIMode) {
+  _inherits(UILayer, _UIMode);
+
+  function UILayer(gameRef, laysOver) {
+    _classCallCheck(this, UILayer);
+
+    var _this = _possibleConstructorReturn(this, (UILayer.__proto__ || Object.getPrototypeOf(UILayer)).call(this, gameRef));
+
+    _this.laysOver = laysOver;
+    return _this;
+  }
+
+  _createClass(UILayer, [{
+    key: 'isLayer',
+    value: function isLayer() {
+      return true;
+    }
+  }, {
+    key: 'exit',
+    value: function exit() {
+      _get(UILayer.prototype.__proto__ || Object.getPrototypeOf(UILayer.prototype), 'exit', this).call(this);
+      this.laysOver.bindCommands();
+    }
+  }]);
+
+  return UILayer;
+}(_ui_mode_base.UIMode);
+
+// *******************************
+
+var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
+  _inherits(UILayer_Text, _UILayer);
+
+  function UILayer_Text(gameRef, laysOver, text) {
+    _classCallCheck(this, UILayer_Text);
+
+    var _this2 = _possibleConstructorReturn(this, (UILayer_Text.__proto__ || Object.getPrototypeOf(UILayer_Text)).call(this, gameRef, laysOver));
+
+    _this2.text = text;
+    return _this2;
+  }
+
+  _createClass(UILayer_Text, [{
+    key: 'bindCommands',
+    value: function bindCommands() {
+      (0, _commands.setKeyBinding)(['textnav']);
+    }
+  }, {
+    key: 'setText',
+    value: function setText(text) {
+      this.text = text;
+    }
+  }, {
+    key: 'handleInput',
+    value: function handleInput(inputType, inputData) {
+      var gameCommand = (0, _commands.getCommandFromInput)(inputType, inputData);
+      if (gameCommand == _commands.COMMAND.NULLCOMMAND) {
+        return false;
+      }
+
+      if (gameCommand == _commands.COMMAND.CANCEL) {
+        this.game.removeUILayer();
+        return false;
+      }
+      if (gameCommand == _commands.COMMAND.LINE_UP) {
+        ;
+      } else if (gameCommand == _commands.COMMAND.LINE_DOWN) {
+        ;
+      } else if (gameCommand == _commands.COMMAND.PAGE_UP) {
+        ;
+      } else if (gameCommand == _commands.COMMAND.PAGE_DOWN) {
+        ;
+      }
+      return true;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      this.display.drawText(1, 1, this.text, _colors.Color.FG, _colors.Color.BG);
+    }
+  }]);
+
+  return UILayer_Text;
+}(UILayer);
 
 /***/ })
 /******/ ]);

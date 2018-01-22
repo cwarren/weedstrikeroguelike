@@ -53,6 +53,13 @@ export let Message = {
         this._messageQueue[i].age++;
       }
     }
+  },
+  archivesAsText() {
+    let text = '';
+    for (let i = this._messageQueue.length-1; i>=0; i--) {
+      text += this._messageQueue[i].txt + "\n";
+    }
+    return text;
   }
 };
 console.log('Message:');
