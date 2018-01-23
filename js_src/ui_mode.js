@@ -3,7 +3,7 @@
 import ROT from 'rot-js';
 import {Message} from './message.js';
 import {UIMode} from './ui_mode_base.js';
-import {UILayer_Text} from './ui_layer.js';
+import {UILayer_Text,UILayer_Target} from './ui_layer.js';
 import {makeMap} from './map.js';
 import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
@@ -207,8 +207,12 @@ export class UIModePlay extends UIMode {
     y += display.drawText(1,y,Color.DEFAULT+"KILLS: "+av.getNumKills());
   }
   
+  getMap() {
+    return DATASTORE.MAPS[this.attr.curMapId];
+  }
+  
   render() {
-    DATASTORE.MAPS[this.attr.curMapId].renderOn(this.display,
+    this.getMap().renderOn(this.display,
       this.attr.cameraMapLoc.x,this.attr.cameraMapLoc.y);
   }
 
@@ -239,6 +243,13 @@ export class UIModePlay extends UIMode {
       // this.game.switchMode('messages');
       let messageLayer = new UILayer_Text(this.game,this,Message.archivesAsText());
       this.game.addUILayer(messageLayer);
+      return false;      
+    }
+    if (gameCommand == COMMAND.LOOK_AROUND) {
+      // this.game.switchMode('messages');
+      let targetLayer = new UILayer_Target(this.game,this,this.getMap(),
+        this.attr.cameraMapLoc.x,this.attr.cameraMapLoc.y);
+      this.game.addUILayer(targetLayer);
       return false;      
     }
 

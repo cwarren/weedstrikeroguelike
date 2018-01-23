@@ -71,7 +71,8 @@ let KEY_BINDINGS = {
   },
   'play': {
     'GAME_CONTROLS':['key:=,altKey:false,ctrlKey:false,shiftKey:false'],
-    'MESSAGES':     ['key:M,altKey:false,ctrlKey:false,shiftKey:true']
+    'MESSAGES':     ['key:M,altKey:false,ctrlKey:false,shiftKey:true'],
+    'LOOK_AROUND':  ['key:L,altKey:false,ctrlKey:false,shiftKey:true']    
   },
   'movement_numpad': {
     'MOVE_UL':  ['key:7,altKey:false,ctrlKey:false,shiftKey:false'],
@@ -89,6 +90,9 @@ let KEY_BINDINGS = {
     'LINE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:false'],
     'PAGE_UP':   ['key:ArrowUp,altKey:false,ctrlKey:false,shiftKey:true'],
     'PAGE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:true']
+  },
+  'activate': {
+    'ACTIVATE': ['key:Enter,altKey:false,ctrlKey:false,shiftKey:false']
   }
 };
 

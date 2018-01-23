@@ -9739,7 +9739,8 @@ var KEY_BINDINGS = {
   },
   'play': {
     'GAME_CONTROLS': ['key:=,altKey:false,ctrlKey:false,shiftKey:false'],
-    'MESSAGES': ['key:M,altKey:false,ctrlKey:false,shiftKey:true']
+    'MESSAGES': ['key:M,altKey:false,ctrlKey:false,shiftKey:true'],
+    'LOOK_AROUND': ['key:L,altKey:false,ctrlKey:false,shiftKey:true']
   },
   'movement_numpad': {
     'MOVE_UL': ['key:7,altKey:false,ctrlKey:false,shiftKey:false'],
@@ -9757,6 +9758,9 @@ var KEY_BINDINGS = {
     'LINE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:false'],
     'PAGE_UP': ['key:ArrowUp,altKey:false,ctrlKey:false,shiftKey:true'],
     'PAGE_DOWN': ['key:ArrowDown,altKey:false,ctrlKey:false,shiftKey:true']
+  },
+  'activate': {
+    'ACTIVATE': ['key:Enter,altKey:false,ctrlKey:false,shiftKey:false']
   }
 };
 
@@ -15861,9 +15865,14 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
       y += display.drawText(1, y, _colors.Color.DEFAULT + "KILLS: " + av.getNumKills());
     }
   }, {
+    key: 'getMap',
+    value: function getMap() {
+      return _datastore.DATASTORE.MAPS[this.attr.curMapId];
+    }
+  }, {
     key: 'render',
     value: function render() {
-      _datastore.DATASTORE.MAPS[this.attr.curMapId].renderOn(this.display, this.attr.cameraMapLoc.x, this.attr.cameraMapLoc.y);
+      this.getMap().renderOn(this.display, this.attr.cameraMapLoc.x, this.attr.cameraMapLoc.y);
     }
   }, {
     key: 'checkGameWinLose',
@@ -15898,6 +15907,12 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
         // this.game.switchMode('messages');
         var messageLayer = new _ui_layer.UILayer_Text(this.game, this, _message.Message.archivesAsText());
         this.game.addUILayer(messageLayer);
+        return false;
+      }
+      if (gameCommand == _commands.COMMAND.LOOK_AROUND) {
+        // this.game.switchMode('messages');
+        var targetLayer = new _ui_layer.UILayer_Target(this.game, this, this.getMap(), this.attr.cameraMapLoc.x, this.attr.cameraMapLoc.y);
+        this.game.addUILayer(targetLayer);
         return false;
       }
 
@@ -16040,7 +16055,7 @@ var UIModeLose = exports.UIModeLose = function (_UIMode5) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UILayer_Text = undefined;
+exports.UILayer_Target = exports.UILayer_Text = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -16051,6 +16066,8 @@ var _ui_mode_base = __webpack_require__(131);
 var _commands = __webpack_require__(132);
 
 var _colors = __webpack_require__(66);
+
+var _display_symbol = __webpack_require__(96);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -16190,6 +16207,93 @@ var UILayer_Text = exports.UILayer_Text = function (_UILayer) {
   }]);
 
   return UILayer_Text;
+}(UILayer);
+
+//================================================================
+//================================================================
+
+var UILayer_Target = exports.UILayer_Target = function (_UILayer2) {
+  _inherits(UILayer_Target, _UILayer2);
+
+  function UILayer_Target(gameRef, laysOver, map, initialX, initialY) {
+    _classCallCheck(this, UILayer_Target);
+
+    var _this3 = _possibleConstructorReturn(this, (UILayer_Target.__proto__ || Object.getPrototypeOf(UILayer_Target)).call(this, gameRef, laysOver));
+
+    _this3.map = map;
+    _this3.targetDX = 0;
+    _this3.targetDY = 0;
+    _this3.initialTargetX = initialX;
+    _this3.initialTargetY = initialY;
+    _this3.displayCenterX = _this3.display.getOptions().width / 2;
+    _this3.displayCenterY = _this3.display.getOptions().height / 2;
+    _this3.targetReticle = new _display_symbol.DisplaySymbol({ chr: '*', fg: '#e33' });
+    return _this3;
+  }
+
+  _createClass(UILayer_Target, [{
+    key: 'bindCommands',
+    value: function bindCommands() {
+      (0, _commands.setKeyBinding)(['movement_numpad', 'activate']);
+    }
+  }, {
+    key: 'handleInput',
+    value: function handleInput(inputType, inputData) {
+      var gameCommand = (0, _commands.getCommandFromInput)(inputType, inputData);
+      if (gameCommand == _commands.COMMAND.NULLCOMMAND) {
+        return false;
+      }
+
+      if (gameCommand == _commands.COMMAND.CANCEL) {
+        this.game.removeUILayer();
+        return false;
+      }
+
+      if (gameCommand == _commands.COMMAND.ACTIVATE) {
+        return this.handleActivate();
+      }
+
+      if (gameCommand == _commands.COMMAND.MOVE_UL) {
+        this.targetDX--;
+        this.targetDY--;
+      } else if (gameCommand == _commands.COMMAND.MOVE_U) {
+        this.targetDY--;
+      } else if (gameCommand == _commands.COMMAND.MOVE_UR) {
+        this.targetDX++;
+        this.targetDY--;
+      } else if (gameCommand == _commands.COMMAND.MOVE_L) {
+        this.targetDX--;
+      } else if (gameCommand == _commands.COMMAND.MOVE_WAIT) {} else if (gameCommand == _commands.COMMAND.MOVE_R) {
+        this.targetDX++;
+      } else if (gameCommand == _commands.COMMAND.MOVE_DL) {
+        this.targetDX--;
+        this.targetDY++;
+      } else if (gameCommand == _commands.COMMAND.MOVE_D) {
+        this.targetDY++;
+      } else if (gameCommand == _commands.COMMAND.MOVE_DR) {
+        this.targetDX++;
+        this.targetDY++;
+      }
+
+      this.render();
+      return false;
+    }
+  }, {
+    key: 'handleActivate',
+    value: function handleActivate() {
+      this.game.removeUILayer();
+      return false;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      this.display.clear();
+      this.map.renderOn(this.display, this.initialTargetX, this.initialTargetY);
+      this.targetReticle.drawOn(this.display, this.displayCenterX + this.targetDX, this.displayCenterY + this.targetDY);
+    }
+  }]);
+
+  return UILayer_Target;
 }(UILayer);
 
 //================================================================

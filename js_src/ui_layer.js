@@ -3,6 +3,7 @@
 import {UIMode} from './ui_mode_base.js';
 import {COMMAND,getCommandFromInput,setKeyBinding} from './commands.js';
 import {Color} from './colors.js';
+import {DisplaySymbol} from './display_symbol.js';
 
 //================================================================
 //================================================================
@@ -96,6 +97,85 @@ export class UILayer_Text extends UILayer {
     if (this.canUseLineDown) {
       this.display.draw(0,this.yDim-1,'\u21d3',Color.BLUE,Color.WHITE);
     }
+  }
+}
+
+//================================================================
+//================================================================
+
+export class UILayer_Target extends UILayer {
+  constructor(gameRef, laysOver, map, initialX, initialY) {
+    super(gameRef,laysOver);
+    this.map = map;
+    this.targetDX = 0;
+    this.targetDY = 0;
+    this.initialTargetX = initialX;
+    this.initialTargetY = initialY;
+    this.displayCenterX = this.display.getOptions().width/2;
+    this.displayCenterY = this.display.getOptions().height/2;
+    this.targetReticle = new DisplaySymbol({chr:'*',fg:'#e33'});
+  }
+  bindCommands() {
+    setKeyBinding(['movement_numpad','activate']);
+  }
+  handleInput(inputType,inputData) {
+    let gameCommand = getCommandFromInput(inputType,inputData);
+    if (gameCommand == COMMAND.NULLCOMMAND) { return false; }
+
+    if (gameCommand == COMMAND.CANCEL) {
+      this.game.removeUILayer();
+      return false;
+    }
+
+    if (gameCommand == COMMAND.ACTIVATE) {
+      return this.handleActivate();
+    }
+
+    if (gameCommand == COMMAND.MOVE_UL) {
+      this.targetDX--;
+      this.targetDY--;
+    } else
+    if (gameCommand == COMMAND.MOVE_U) {
+      this.targetDY--;
+    } else
+    if (gameCommand == COMMAND.MOVE_UR) {
+      this.targetDX++;
+      this.targetDY--;
+    } else
+    if (gameCommand == COMMAND.MOVE_L) {
+      this.targetDX--;
+    } else
+    if (gameCommand == COMMAND.MOVE_WAIT) {
+    } else
+    if (gameCommand == COMMAND.MOVE_R) {
+      this.targetDX++;
+    } else
+    if (gameCommand == COMMAND.MOVE_DL) {
+      this.targetDX--;
+      this.targetDY++;
+    } else
+    if (gameCommand == COMMAND.MOVE_D) {
+      this.targetDY++;
+    } else
+    if (gameCommand == COMMAND.MOVE_DR) {
+      this.targetDX++;
+      this.targetDY++;
+    }
+
+    this.render();
+    return false;
+  }
+  
+  handleActivate() {
+    this.game.removeUILayer();
+    return false;
+  }
+  
+  render() {
+    this.display.clear();
+    this.map.renderOn(this.display,this.initialTargetX,this.initialTargetY);
+    this.targetReticle.drawOn(this.display,
+      this.displayCenterX+this.targetDX,this.displayCenterY+this.targetDY);
   }
 }
 
