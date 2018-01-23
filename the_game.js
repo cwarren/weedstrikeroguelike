@@ -16260,33 +16260,36 @@ var UILayer_Target = exports.UILayer_Target = function (_UILayer2) {
       }
 
       if (gameCommand == _commands.COMMAND.MOVE_UL) {
-        this.targetDX--;
-        this.targetDY--;
+        this.tryMoveReticle(-1, -1);
       } else if (gameCommand == _commands.COMMAND.MOVE_U) {
-        this.targetDY--;
+        this.tryMoveReticle(0, -1);
       } else if (gameCommand == _commands.COMMAND.MOVE_UR) {
-        this.targetDX++;
-        this.targetDY--;
+        this.tryMoveReticle(1, -1);
       } else if (gameCommand == _commands.COMMAND.MOVE_L) {
-        this.targetDX--;
-      } else if (gameCommand == _commands.COMMAND.MOVE_WAIT) {} else if (gameCommand == _commands.COMMAND.MOVE_R) {
-        this.targetDX++;
+        this.tryMoveReticle(-1, 0);
+      } else if (gameCommand == _commands.COMMAND.MOVE_R) {
+        this.tryMoveReticle(1, 0);
       } else if (gameCommand == _commands.COMMAND.MOVE_DL) {
-        this.targetDX--;
-        this.targetDY++;
+        this.tryMoveReticle(-1, 1);
       } else if (gameCommand == _commands.COMMAND.MOVE_D) {
-        this.targetDY++;
+        this.tryMoveReticle(0, 1);
       } else if (gameCommand == _commands.COMMAND.MOVE_DR) {
-        this.targetDX++;
-        this.targetDY++;
+        this.tryMoveReticle(1, 1);
       }
 
       this.render();
       return false;
     }
   }, {
+    key: 'tryMoveReticle',
+    value: function tryMoveReticle(dx, dy) {
+      this.targetDX += dx;
+      this.targetDY += dy;
+    }
+  }, {
     key: 'handleActivate',
     value: function handleActivate() {
+      // sub-classes would override this to do something specific with the targeted location
       this.game.removeUILayer();
       return false;
     }
@@ -16315,15 +16318,42 @@ var UILayer_TargetLook = exports.UILayer_TargetLook = function (_UILayer_Target)
   }
 
   _createClass(UILayer_TargetLook, [{
+    key: 'tryMoveReticle',
+    value: function tryMoveReticle(dx, dy) {
+      var newX = this.targetDX * 1 + dx * 1;
+      var newY = this.targetDY * 1 + dy * 1;
+
+      // this is where FOV checking would come in, to prevent moving the reticle to a place that the avatar can't see
+
+      this.targetDX = newX;
+      this.targetDY = newY;
+    }
+  }, {
+    key: 'getLookInfo',
+    value: function getLookInfo() {
+      var onTarget = this.map.getMapDataAt(this.initialTargetX + this.targetDX, this.initialTargetY + this.targetDY);
+
+      // for now looking at something just shows the name, but once descriptions are implemented it would show that instead
+      // right now there are just tiles and entities, but when items are in play that info would also be shown
+      var msg = onTarget.tile.getName();
+      if (onTarget.entity) {
+        msg = onTarget.entity.getName() + ' on ' + onTarget.tile.getName();
+      }
+
+      return msg;
+    }
+  }, {
+    key: 'handleActivate',
+    value: function handleActivate() {
+      _message.Message.send("looked at " + this.getLookInfo());
+      this.game.removeUILayer();
+      return false;
+    }
+  }, {
     key: 'render',
     value: function render() {
       _get(UILayer_TargetLook.prototype.__proto__ || Object.getPrototypeOf(UILayer_TargetLook.prototype), 'render', this).call(this);
-      var onTarget = this.map.getMapDataAt(this.initialTargetX + this.targetDX, this.initialTargetY + this.targetDY);
-      var msg = onTarget.tile.getName();
-      if (onTarget.entity) {
-        msg = onTarget.entity.getName();
-      }
-      _message.Message.sendSpecial(msg);
+      _message.Message.sendSpecial(this.getLookInfo());
     }
   }]);
 

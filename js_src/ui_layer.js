@@ -133,41 +133,41 @@ export class UILayer_Target extends UILayer {
     }
 
     if (gameCommand == COMMAND.MOVE_UL) {
-      this.targetDX--;
-      this.targetDY--;
+      this.tryMoveReticle(-1,-1);
     } else
     if (gameCommand == COMMAND.MOVE_U) {
-      this.targetDY--;
+      this.tryMoveReticle(0,-1);
     } else
     if (gameCommand == COMMAND.MOVE_UR) {
-      this.targetDX++;
-      this.targetDY--;
+      this.tryMoveReticle(1,-1);
     } else
     if (gameCommand == COMMAND.MOVE_L) {
-      this.targetDX--;
-    } else
-    if (gameCommand == COMMAND.MOVE_WAIT) {
+      this.tryMoveReticle(-1,0);
     } else
     if (gameCommand == COMMAND.MOVE_R) {
-      this.targetDX++;
+      this.tryMoveReticle(1,0);
     } else
     if (gameCommand == COMMAND.MOVE_DL) {
-      this.targetDX--;
-      this.targetDY++;
+      this.tryMoveReticle(-1,1);
     } else
     if (gameCommand == COMMAND.MOVE_D) {
-      this.targetDY++;
+      this.tryMoveReticle(0,1);
     } else
     if (gameCommand == COMMAND.MOVE_DR) {
-      this.targetDX++;
-      this.targetDY++;
+      this.tryMoveReticle(1,1);
     }
 
     this.render();
     return false;
   }
   
+  tryMoveReticle(dx,dy) {
+    this.targetDX += dx;
+    this.targetDY += dy;
+  }
+  
   handleActivate() {
+    // sub-classes would override this to do something specific with the targeted location
     this.game.removeUILayer();
     return false;
   }
@@ -184,14 +184,38 @@ export class UILayer_Target extends UILayer {
 //================================================================
 
 export class UILayer_TargetLook extends UILayer_Target {
-  render() {
-    super.render();
+  tryMoveReticle(dx,dy) {
+    let newX = this.targetDX*1 + dx*1;
+    let newY = this.targetDY*1 + dy*1;
+
+    // this is where FOV checking would come in, to prevent moving the reticle to a place that the avatar can't see
+
+    this.targetDX = newX;
+    this.targetDY = newY;
+  }
+
+  getLookInfo() {
     let onTarget = this.map.getMapDataAt(this.initialTargetX+this.targetDX,
       this.initialTargetY+this.targetDY);
+    
+    // for now looking at something just shows the name, but once descriptions are implemented it would show that instead
+    // right now there are just tiles and entities, but when items are in play that info would also be shown
     let msg = onTarget.tile.getName();
     if (onTarget.entity) {
-      msg = onTarget.entity.getName();
+      msg = onTarget.entity.getName() + ' on ' + onTarget.tile.getName();
     }
-    Message.sendSpecial(msg);
+    
+    return msg;
+  }
+
+  handleActivate() {
+    Message.send("looked at "+this.getLookInfo());
+    this.game.removeUILayer();
+    return false;
+  }
+
+  render() {
+    super.render();
+    Message.sendSpecial(this.getLookInfo());
   }
 }
