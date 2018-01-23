@@ -1,5 +1,6 @@
 // interface layers that 'sit on top of' ui modes - e.g. a text display layer, which could show some help text, then revert to whatever the underlying layer or mode is when exited.
 
+import {Message} from './message.js';
 import {UIMode} from './ui_mode_base.js';
 import {COMMAND,getCommandFromInput,setKeyBinding} from './commands.js';
 import {Color} from './colors.js';
@@ -181,3 +182,10 @@ export class UILayer_Target extends UILayer {
 
 //================================================================
 //================================================================
+
+export class UILayer_TargetLook extends UILayer_Target {
+  render() {
+    super.render();
+    Message.sendSpecial("hello");
+  }
+}

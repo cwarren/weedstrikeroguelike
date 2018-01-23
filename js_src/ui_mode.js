@@ -3,7 +3,7 @@
 import ROT from 'rot-js';
 import {Message} from './message.js';
 import {UIMode} from './ui_mode_base.js';
-import {UILayer_Text,UILayer_Target} from './ui_layer.js';
+import {UILayer_Text,UILayer_TargetLook} from './ui_layer.js';
 import {makeMap} from './map.js';
 import {Color} from './colors.js';
 import {DisplaySymbol} from './display_symbol.js';
@@ -247,9 +247,9 @@ export class UIModePlay extends UIMode {
     }
     if (gameCommand == COMMAND.LOOK_AROUND) {
       // this.game.switchMode('messages');
-      let targetLayer = new UILayer_Target(this.game,this,this.getMap(),
+      let lookLayer = new UILayer_TargetLook(this.game,this,this.getMap(),
         this.attr.cameraMapLoc.x,this.attr.cameraMapLoc.y);
-      this.game.addUILayer(targetLayer);
+      this.game.addUILayer(lookLayer);
       return false;      
     }
 

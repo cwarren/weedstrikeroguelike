@@ -8561,6 +8561,10 @@ var Message = exports.Message = {
       this._messageQueue.pop();
     }
   },
+  sendSpecial: function sendSpecial(msg) {
+    this._targetDisplay.o.clear();
+    this._targetDisplay.o.drawText(0, 0, msg);
+  },
   clear: function clear() {
     this._messageQueue = '';
   },
@@ -15911,8 +15915,8 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
       }
       if (gameCommand == _commands.COMMAND.LOOK_AROUND) {
         // this.game.switchMode('messages');
-        var targetLayer = new _ui_layer.UILayer_Target(this.game, this, this.getMap(), this.attr.cameraMapLoc.x, this.attr.cameraMapLoc.y);
-        this.game.addUILayer(targetLayer);
+        var lookLayer = new _ui_layer.UILayer_TargetLook(this.game, this, this.getMap(), this.attr.cameraMapLoc.x, this.attr.cameraMapLoc.y);
+        this.game.addUILayer(lookLayer);
         return false;
       }
 
@@ -16055,11 +16059,13 @@ var UIModeLose = exports.UIModeLose = function (_UIMode5) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UILayer_Target = exports.UILayer_Text = undefined;
+exports.UILayer_TargetLook = exports.UILayer_Target = exports.UILayer_Text = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _message = __webpack_require__(95);
 
 var _ui_mode_base = __webpack_require__(131);
 
@@ -16298,6 +16304,26 @@ var UILayer_Target = exports.UILayer_Target = function (_UILayer2) {
 
 //================================================================
 //================================================================
+
+var UILayer_TargetLook = exports.UILayer_TargetLook = function (_UILayer_Target) {
+  _inherits(UILayer_TargetLook, _UILayer_Target);
+
+  function UILayer_TargetLook() {
+    _classCallCheck(this, UILayer_TargetLook);
+
+    return _possibleConstructorReturn(this, (UILayer_TargetLook.__proto__ || Object.getPrototypeOf(UILayer_TargetLook)).apply(this, arguments));
+  }
+
+  _createClass(UILayer_TargetLook, [{
+    key: 'render',
+    value: function render() {
+      _get(UILayer_TargetLook.prototype.__proto__ || Object.getPrototypeOf(UILayer_TargetLook.prototype), 'render', this).call(this);
+      _message.Message.sendSpecial("hello");
+    }
+  }]);
+
+  return UILayer_TargetLook;
+}(UILayer_Target);
 
 /***/ }),
 /* 341 */

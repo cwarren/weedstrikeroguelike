@@ -44,6 +44,10 @@ export let Message = {
       this._messageQueue.pop();
     }
   },
+  sendSpecial: function(msg) {
+    this._targetDisplay.o.clear();
+    this._targetDisplay.o.drawText(0,0,msg);
+  },
   clear: function () {
     this._messageQueue = '';
   },
