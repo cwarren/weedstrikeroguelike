@@ -16318,7 +16318,12 @@ var UILayer_TargetLook = exports.UILayer_TargetLook = function (_UILayer_Target)
     key: 'render',
     value: function render() {
       _get(UILayer_TargetLook.prototype.__proto__ || Object.getPrototypeOf(UILayer_TargetLook.prototype), 'render', this).call(this);
-      _message.Message.sendSpecial("hello");
+      var onTarget = this.map.getMapDataAt(this.initialTargetX + this.targetDX, this.initialTargetY + this.targetDY);
+      var msg = onTarget.tile.getName();
+      if (onTarget.entity) {
+        msg = onTarget.entity.getName();
+      }
+      _message.Message.sendSpecial(msg);
     }
   }]);
 

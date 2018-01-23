@@ -186,6 +186,12 @@ export class UILayer_Target extends UILayer {
 export class UILayer_TargetLook extends UILayer_Target {
   render() {
     super.render();
-    Message.sendSpecial("hello");
+    let onTarget = this.map.getMapDataAt(this.initialTargetX+this.targetDX,
+      this.initialTargetY+this.targetDY);
+    let msg = onTarget.tile.getName();
+    if (onTarget.entity) {
+      msg = onTarget.entity.getName();
+    }
+    Message.sendSpecial(msg);
   }
 }
