@@ -73,6 +73,13 @@ export class MixableSymbol extends DisplaySymbol {
   // -----------------------------------
 
   // call the relevant event listener for each mixin, compiling their results
+  // returns a table of results from all handlers of the event
+  /*
+  {
+    keyA: [vA,vB],
+    keyB: [foo,bar,baz]
+  }
+  */
   raiseMixinEvent(evtLabel,evtData) {
     // console.log('raiseSymbolActiveEvent '+evtLabel);
     // console.dir(JSON.parse(JSON.stringify(evtData)));

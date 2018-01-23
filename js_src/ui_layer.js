@@ -26,11 +26,7 @@ export class UILayer_Text extends UILayer {
   constructor(gameRef, laysOver,text) {
     super(gameRef,laysOver);
     this.yDim = this.display.getOptions().height;
-    this.text = text;
-    this.yBase = 0;
-    this.totalTextLines = 0;
-    this.canUseLineUp = false;
-    this.canUseLineDown = false;
+    this.setText(text);
   }
   bindCommands() {
     setKeyBinding(['textnav']);
@@ -41,7 +37,6 @@ export class UILayer_Text extends UILayer {
     this.totalTextLines = 0;
     this.canUseLineUp = false;
     this.canUseLineDown = false;
-    this.render();
   }
   handleInput(inputType,inputData) {
     let gameCommand = getCommandFromInput(inputType,inputData);
