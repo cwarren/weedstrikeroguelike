@@ -52,3 +52,21 @@ EntityFactory.learn({
   maxHp: 4,
   mixins: ["HitPoints","ActorWanderer","WalkerCorporeal"]
 });
+
+EntityFactory.learn({
+  templateName: 'friendly worm',
+  descr: 'it wriggles, it squiggles, it squirms around',
+  chr: '~',
+  fg: '#e43',
+  maxHp: 7,
+  mixins: ["HitPoints","ActorWandererAggressive","WalkerCorporeal"]
+});
+
+EntityFactory.learn({
+  templateName: 'dangerous worm',
+  descr: 'it wriggles, it squiggles, it squirms around',
+  chr: '~',
+  fg: '#f21',
+  maxHp: 9,
+  mixins: ["HitPoints","ActorWandererAggressive","WalkerCorporeal","MeleeAttacker"]
+});

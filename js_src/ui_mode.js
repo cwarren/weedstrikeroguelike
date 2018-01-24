@@ -176,7 +176,7 @@ export class UIModePlay extends UIMode {
     
     let av = EntityFactory.create('avatar');
     this.cachedAvatar = av; // to have the avatar still available after it's been destroyed (e.g. when reduced to <= 0 hp)
-    let m = makeMap({xdim:60,ydim:20});
+    let m = makeMap({xdim:30,ydim:16});
     av.setpos(m.getUnblockedPerimeterLocation());
     m.addEntity(av);
 
@@ -203,7 +203,7 @@ export class UIModePlay extends UIMode {
       }
     }
 
-    let e = EntityFactory.create('confused worm');
+    let e = EntityFactory.create('dangerous worm');
     e.setpos(m.getRandomUnblockedLocation());
     m.addEntity(e);
   }
@@ -323,35 +323,6 @@ export class UIModePlay extends UIMode {
     this.cachedAvatar = this.getAvatar();
   }
 }
-
-//-----------------------------------------------------
-//-----------------------------------------------------
-
-// export class UIModeMessages extends UIMode {
-//   bindCommands() {
-//     setKeyBinding(['message']);
-//   }
-// 
-//   render() {
-//     Message.renderOn(this.display);
-//   }
-// 
-//   handleInput(inputType,inputData) {
-//     let gameCommand = getCommandFromInput(inputType,inputData);
-//     if (gameCommand == COMMAND.NULLCOMMAND) { return false; }
-// 
-//     if (gameCommand == COMMAND.CANCEL) {
-// 
-//     if (inputType == 'keyup') {
-//       if (inputData.key == 'Escape') {
-//         if (this.game.isPlaying) {
-//           this.game.switchMode('play');
-//         }
-//       }
-//       return false;
-//     }
-//   }
-// }
 
 //-----------------------------------------------------
 //-----------------------------------------------------

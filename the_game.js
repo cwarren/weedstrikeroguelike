@@ -9879,6 +9879,24 @@ EntityFactory.learn({
   mixins: ["HitPoints", "ActorWanderer", "WalkerCorporeal"]
 });
 
+EntityFactory.learn({
+  templateName: 'friendly worm',
+  descr: 'it wriggles, it squiggles, it squirms around',
+  chr: '~',
+  fg: '#e43',
+  maxHp: 7,
+  mixins: ["HitPoints", "ActorWandererAggressive", "WalkerCorporeal"]
+});
+
+EntityFactory.learn({
+  templateName: 'dangerous worm',
+  descr: 'it wriggles, it squiggles, it squirms around',
+  chr: '~',
+  fg: '#f21',
+  maxHp: 9,
+  mixins: ["HitPoints", "ActorWandererAggressive", "WalkerCorporeal", "MeleeAttacker"]
+});
+
 /***/ }),
 /* 135 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15888,7 +15906,7 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
 
       var av = _entities.EntityFactory.create('avatar');
       this.cachedAvatar = av; // to have the avatar still available after it's been destroyed (e.g. when reduced to <= 0 hp)
-      var m = (0, _map.makeMap)({ xdim: 60, ydim: 20 });
+      var m = (0, _map.makeMap)({ xdim: 30, ydim: 16 });
       av.setpos(m.getUnblockedPerimeterLocation());
       m.addEntity(av);
 
@@ -15915,7 +15933,7 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
         }
       }
 
-      var e = _entities.EntityFactory.create('confused worm');
+      var e = _entities.EntityFactory.create('dangerous worm');
       e.setpos(m.getRandomUnblockedLocation());
       m.addEntity(e);
     }
@@ -16045,35 +16063,6 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
 
   return UIModePlay;
 }(_ui_mode_base.UIMode);
-
-//-----------------------------------------------------
-//-----------------------------------------------------
-
-// export class UIModeMessages extends UIMode {
-//   bindCommands() {
-//     setKeyBinding(['message']);
-//   }
-// 
-//   render() {
-//     Message.renderOn(this.display);
-//   }
-// 
-//   handleInput(inputType,inputData) {
-//     let gameCommand = getCommandFromInput(inputType,inputData);
-//     if (gameCommand == COMMAND.NULLCOMMAND) { return false; }
-// 
-//     if (gameCommand == COMMAND.CANCEL) {
-// 
-//     if (inputType == 'keyup') {
-//       if (inputData.key == 'Escape') {
-//         if (this.game.isPlaying) {
-//           this.game.switchMode('play');
-//         }
-//       }
-//       return false;
-//     }
-//   }
-// }
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -17107,7 +17096,7 @@ var MixableSymbol = exports.MixableSymbol = function (_DisplaySymbol) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ActorWanderer = exports.ActorPlayer = exports.MeleeThorns = exports.MeleeAttacker = exports.HitPoints = exports.KillTracker = exports.TimeTracker = exports.WalkerCorporeal = exports.PlayerMessager = undefined;
+exports.ActorWandererAggressive = exports.ActorWanderer = exports.ActorPlayer = exports.MeleeThorns = exports.MeleeAttacker = exports.HitPoints = exports.KillTracker = exports.TimeTracker = exports.WalkerCorporeal = exports.PlayerMessager = undefined;
 
 var _rotJs = __webpack_require__(46);
 
@@ -17194,12 +17183,16 @@ var PlayerMessager = exports.PlayerMessager = {
   },
   METHODS: {
     tryWalk: function tryWalk(dx, dy) {
-      // console.log(`${this.getName()} walking by ${dx},${dy}`);
+      console.log(this.getName() + ' walking by ' + dx + ',' + dy);
       var newx = this.getx() + dx;
       var newy = this.gety() + dy;
       var md = this.getMap().getMapDataAt(newx, newy);
       if (md.entity) {
         var bumpRes = this.raiseMixinEvent('bumpEntity', { 'target': md.entity });
+        if (!bumpRes.acted) {
+          this.raiseMixinEvent('actionDone');
+          return true;
+        }
         var tookAction = U.collapseArrayByOr(bumpRes.acted);
         if (tookAction) {
           this.raiseMixinEvent('actionDone');
@@ -17507,7 +17500,6 @@ var ActorWanderer = exports.ActorWanderer = {
         return;
       } // a gate to deal with JS timing issues
       this.isActing(true);
-      console.log("wanderer is acting");
 
       // do wandering here
       var dx = U.randomInt(-1, 1);
@@ -17526,6 +17518,84 @@ var ActorWanderer = exports.ActorWanderer = {
     'actionDone': function actionDone(evtData) {
       // TIME_ENGINE.unlock();
       console.log("end wanderer acting");
+    }
+  }
+};
+
+//############################################################
+
+var ActorWandererAggressive = exports.ActorWandererAggressive = {
+  META: {
+    mixinName: 'ActorWandererAggressive',
+    mixinGroupName: 'Actor',
+    stateNamespace: '_ActorWandererAggressive',
+    stateModel: {
+      baseActionDuration: 1000,
+      actingState: false,
+      currentActionDuration: 1000
+    },
+    init: function init(template) {
+      _timing.SCHEDULER.add(this, true, U.randomInt(2, this.attr._ActorWandererAggressive.baseActionDuration));
+    }
+  },
+  METHODS: {
+    getBaseActionDuration: function getBaseActionDuration() {
+      return this.attr._ActorWandererAggressive.baseActionDuration;
+    },
+    setBaseActionDuration: function setBaseActionDuration(n) {
+      this.attr._ActorWandererAggressive.baseActionDuration = n;
+    },
+    getCurrentActionDuration: function getCurrentActionDuration() {
+      return this.attr._ActorWandererAggressive.currentActionDuration;
+    },
+    setCurrentActionDuration: function setCurrentActionDuration(n) {
+      this.attr._ActorWandererAggressive.currentActionDuration = n;
+    },
+    isActing: function isActing(state) {
+      if (state !== undefined) {
+        this.attr._ActorWandererAggressive.actingState = state;
+      }
+      return this.attr._ActorWandererAggressive.actingState;
+    },
+    act: function act() {
+      if (this.isActing()) {
+        return;
+      } // a gate to deal with JS timing issues
+      this.isActing(true);
+
+      // do wandering here
+      var dx = U.randomInt(-1, 1);
+      var dy = U.randomInt(-1, 1);
+
+      // but before heading that direction, check to see if the avatar is adjacent, and if so try to walk there
+      for (var pdx = -1; pdx <= 1; pdx++) {
+        for (var pdy = -1; pdy <= 1; pdy++) {
+          var newx = this.getx() + pdx;
+          var newy = this.gety() + pdy;
+          var md = this.getMap().getMapDataAt(newx, newy);
+          if (md.entity) {
+            if (md.entity.getName() == 'avatar') {
+              dx = pdx;
+              dy = pdy;
+            }
+          }
+        }
+      }
+
+      // console.log(`wandering attempting walk: ${dx},${dy}`);
+      if (dx != 0 || dy != 0) {
+        this.raiseMixinEvent('walkAttempt', { 'dx': dx, 'dy': dy });
+      }
+      // TIME_ENGINE.lock();
+      _timing.SCHEDULER.setDuration(this.getCurrentActionDuration());
+      this.setCurrentActionDuration(this.getBaseActionDuration() + U.randomInt(-5, 5));
+      this.isActing(false);
+    }
+  },
+  LISTENERS: {
+    'actionDone': function actionDone(evtData) {
+      // TIME_ENGINE.unlock();
+      // console.log("end wanderer acting");
     }
   }
 };
