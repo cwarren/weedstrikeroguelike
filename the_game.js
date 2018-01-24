@@ -9675,8 +9675,8 @@ var UIMode = exports.UIMode = function () {
   }, {
     key: "handleInput",
     value: function handleInput(inputType, inputData) {
-      console.log("UIMode handleInput - " + this.constructor.name);
-      UIMode.dumpInput(inputType, inputData);
+      // console.log(`UIMode handleInput - ${this.constructor.name}`);
+      // UIMode.dumpInput(inputType,inputData);
       // NOTE: returns true if the input caused any game play changes, false otherwise
       return false;
     }
@@ -15825,6 +15825,7 @@ var UIModePersistence = exports.UIModePersistence = function (_UIMode2) {
       var savedState = JSON.parse(serializedGameState);
 
       (0, _datastore.initializeDatastore)();
+      (0, _timing.initTiming)();
 
       // restore game core
       _datastore.DATASTORE.GAME = this.game;
@@ -15902,6 +15903,7 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
       (0, _datastore.initializeDatastore)();
       (0, _timing.initTiming)();
       _datastore.DATASTORE.GAME = this.game;
+      console.log("new game datastore is");
       console.dir(_datastore.DATASTORE);
 
       var av = _entities.EntityFactory.create('avatar');
@@ -17183,7 +17185,7 @@ var PlayerMessager = exports.PlayerMessager = {
   },
   METHODS: {
     tryWalk: function tryWalk(dx, dy) {
-      console.log(this.getName() + ' walking by ' + dx + ',' + dy);
+      // console.log(`${this.getName()} walking by ${dx},${dy}`);
       var newx = this.getx() + dx;
       var newy = this.gety() + dy;
       var md = this.getMap().getMapDataAt(newx, newy);
@@ -17444,7 +17446,7 @@ var HitPoints = exports.HitPoints = {
       _timing.TIME_ENGINE.lock();
       _datastore.DATASTORE.GAME.render();
       this.isActing(false);
-      console.log("player is acting");
+      // console.log("player is acting");
     }
   },
   LISTENERS: {
@@ -17455,7 +17457,7 @@ var HitPoints = exports.HitPoints = {
       setTimeout(function () {
         _timing.TIME_ENGINE.unlock();
       }, 1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
-      console.log("end player acting");
+      // console.log("end player acting");
     }
   }
 };
@@ -17517,7 +17519,7 @@ var ActorWanderer = exports.ActorWanderer = {
   LISTENERS: {
     'actionDone': function actionDone(evtData) {
       // TIME_ENGINE.unlock();
-      console.log("end wanderer acting");
+      // console.log("end wanderer acting");
     }
   }
 };
