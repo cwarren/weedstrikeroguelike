@@ -43,3 +43,12 @@ EntityFactory.learn({
   meleeThornDamage: 3,
   mixins: ["HitPoints","MeleeThorns"]
 });
+
+EntityFactory.learn({
+  templateName: 'confused worm',
+  descr: 'it wriggles, it squiggles, it squirms around',
+  chr: '~',
+  fg: '#e65',
+  maxHp: 4,
+  mixins: ["HitPoints","ActorWanderer","WalkerCorporeal"]
+});

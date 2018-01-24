@@ -9870,6 +9870,15 @@ EntityFactory.learn({
   mixins: ["HitPoints", "MeleeThorns"]
 });
 
+EntityFactory.learn({
+  templateName: 'confused worm',
+  descr: 'it wriggles, it squiggles, it squirms around',
+  chr: '~',
+  fg: '#e65',
+  maxHp: 4,
+  mixins: ["HitPoints", "ActorWanderer", "WalkerCorporeal"]
+});
+
 /***/ }),
 /* 135 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -15895,16 +15904,20 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
 
       // populate the map with some entities (will need a better general approach to this at some point)
 
-      // let i=0;
-      // while (i<10) {
-      //   let t = EntityFactory.getRandomTemplateName();
-      //   if (t != 'avatar') {
-      //     i++;
-      //     let e = EntityFactory.create(t);
-      //     e.setpos(m.getRandomUnblockedLocation());
-      //     m.addEntity(e);
-      //   }
-      // }
+      var i = 0;
+      while (i < 10) {
+        var t = _entities.EntityFactory.getRandomTemplateName();
+        if (t != 'avatar') {
+          i++;
+          var _e = _entities.EntityFactory.create(t);
+          _e.setpos(m.getRandomUnblockedLocation());
+          m.addEntity(_e);
+        }
+      }
+
+      var e = _entities.EntityFactory.create('confused worm');
+      e.setpos(m.getRandomUnblockedLocation());
+      m.addEntity(e);
     }
   }, {
     key: 'getAvatar',
@@ -15989,7 +16002,7 @@ var UIModePlay = exports.UIModePlay = function (_UIMode3) {
       } else if (gameCommand == _commands.COMMAND.MOVE_L) {
         avatarMoved = _datastore.DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1, 0);
       } else if (gameCommand == _commands.COMMAND.MOVE_WAIT) {
-        _datastore.DATASTORE.ENTITIES[this.attr.avatarId].raiseMixinEvent('turnTaken', { 'turnAction': 'wait' });
+        _datastore.DATASTORE.ENTITIES[this.attr.avatarId].raiseMixinEvent('actionDone');
       } else if (gameCommand == _commands.COMMAND.MOVE_R) {
         avatarMoved = _datastore.DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1, 0);
       } else if (gameCommand == _commands.COMMAND.MOVE_DL) {
@@ -17094,7 +17107,7 @@ var MixableSymbol = exports.MixableSymbol = function (_DisplaySymbol) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ActorPlayer = exports.MeleeThorns = exports.MeleeAttacker = exports.HitPoints = exports.KillTracker = exports.TimeTracker = exports.WalkerCorporeal = exports.PlayerMessager = undefined;
+exports.ActorWanderer = exports.ActorPlayer = exports.MeleeThorns = exports.MeleeAttacker = exports.HitPoints = exports.KillTracker = exports.TimeTracker = exports.WalkerCorporeal = exports.PlayerMessager = undefined;
 
 var _rotJs = __webpack_require__(46);
 
@@ -17181,6 +17194,7 @@ var PlayerMessager = exports.PlayerMessager = {
   },
   METHODS: {
     tryWalk: function tryWalk(dx, dy) {
+      // console.log(`${this.getName()} walking by ${dx},${dy}`);
       var newx = this.getx() + dx;
       var newy = this.gety() + dy;
       var md = this.getMap().getMapDataAt(newx, newy);
@@ -17200,6 +17214,11 @@ var PlayerMessager = exports.PlayerMessager = {
       this.raiseMixinEvent('turnTaken', { 'turnAction': 'walk' });
       this.raiseMixinEvent('actionDone');
       return true;
+    }
+  },
+  LISTENERS: {
+    'walkAttempt': function walkAttempt(evtData) {
+      this.tryWalk(evtData.dx, evtData.dy);
     }
   }
 
@@ -17444,6 +17463,69 @@ var HitPoints = exports.HitPoints = {
         _timing.TIME_ENGINE.unlock();
       }, 1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
       console.log("end player acting");
+    }
+  }
+};
+
+//############################################################
+
+var ActorWanderer = exports.ActorWanderer = {
+  META: {
+    mixinName: 'ActorWanderer',
+    mixinGroupName: 'Actor',
+    stateNamespace: '_ActorWanderer',
+    stateModel: {
+      baseActionDuration: 1000,
+      actingState: false,
+      currentActionDuration: 1000
+    },
+    init: function init(template) {
+      _timing.SCHEDULER.add(this, true, U.randomInt(2, this.attr._ActorWanderer.baseActionDuration));
+    }
+  },
+  METHODS: {
+    getBaseActionDuration: function getBaseActionDuration() {
+      return this.attr._ActorWanderer.baseActionDuration;
+    },
+    setBaseActionDuration: function setBaseActionDuration(n) {
+      this.attr._ActorWanderer.baseActionDuration = n;
+    },
+    getCurrentActionDuration: function getCurrentActionDuration() {
+      return this.attr._ActorWanderer.currentActionDuration;
+    },
+    setCurrentActionDuration: function setCurrentActionDuration(n) {
+      this.attr._ActorWanderer.currentActionDuration = n;
+    },
+    isActing: function isActing(state) {
+      if (state !== undefined) {
+        this.attr._ActorWanderer.actingState = state;
+      }
+      return this.attr._ActorWanderer.actingState;
+    },
+    act: function act() {
+      if (this.isActing()) {
+        return;
+      } // a gate to deal with JS timing issues
+      this.isActing(true);
+      console.log("wanderer is acting");
+
+      // do wandering here
+      var dx = U.randomInt(-1, 1);
+      var dy = U.randomInt(-1, 1);
+      // console.log(`wandering attempting walk: ${dx},${dy}`);
+      if (dx != 0 || dy != 0) {
+        this.raiseMixinEvent('walkAttempt', { 'dx': dx, 'dy': dy });
+      }
+      // TIME_ENGINE.lock();
+      _timing.SCHEDULER.setDuration(this.getCurrentActionDuration());
+      this.setCurrentActionDuration(this.getBaseActionDuration() + U.randomInt(-5, 5));
+      this.isActing(false);
+    }
+  },
+  LISTENERS: {
+    'actionDone': function actionDone(evtData) {
+      // TIME_ENGINE.unlock();
+      console.log("end wanderer acting");
     }
   }
 };

@@ -192,17 +192,22 @@ export class UIModePlay extends UIMode {
     
     // populate the map with some entities (will need a better general approach to this at some point)
 
-    // let i=0;
-    // while (i<10) {
-    //   let t = EntityFactory.getRandomTemplateName();
-    //   if (t != 'avatar') {
-    //     i++;
-    //     let e = EntityFactory.create(t);
-    //     e.setpos(m.getRandomUnblockedLocation());
-    //     m.addEntity(e);
-    //   }
-    // }
+    let i=0;
+    while (i<10) {
+      let t = EntityFactory.getRandomTemplateName();
+      if (t != 'avatar') {
+        i++;
+        let e = EntityFactory.create(t);
+        e.setpos(m.getRandomUnblockedLocation());
+        m.addEntity(e);
+      }
+    }
+
+    let e = EntityFactory.create('confused worm');
+    e.setpos(m.getRandomUnblockedLocation());
+    m.addEntity(e);
   }
+
   
   getAvatar() {
     if (! this.attr || ! this.attr.avatarId) { return false; }
@@ -279,7 +284,7 @@ export class UIModePlay extends UIMode {
       avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(-1,0);
     } else
     if (gameCommand == COMMAND.MOVE_WAIT) {
-      DATASTORE.ENTITIES[this.attr.avatarId].raiseMixinEvent('turnTaken',{'turnAction':'wait'});
+      DATASTORE.ENTITIES[this.attr.avatarId].raiseMixinEvent('actionDone');
     } else
     if (gameCommand == COMMAND.MOVE_R) {
       avatarMoved = DATASTORE.ENTITIES[this.attr.avatarId].tryWalk(1,0);

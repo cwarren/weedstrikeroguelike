@@ -73,6 +73,7 @@ export let WalkerCorporeal = {
   },
   METHODS: {
     tryWalk: function(dx,dy) {
+      // console.log(`${this.getName()} walking by ${dx},${dy}`);
       let newx = this.getx()+dx;
       let newy = this.gety()+dy;
       let md = this.getMap().getMapDataAt(newx,newy);
@@ -92,6 +93,11 @@ export let WalkerCorporeal = {
       this.raiseMixinEvent('turnTaken',{'turnAction':'walk'});
       this.raiseMixinEvent('actionDone');
       return true;
+    }
+  },
+  LISTENERS: {
+    'walkAttempt': function(evtData) {
+      this.tryWalk(evtData.dx,evtData.dy);
     }
   }
 }
@@ -331,6 +337,67 @@ export let ActorPlayer = {
       this.raiseMixinEvent('turnTaken',{timeUsed: 1});
       setTimeout(function() {TIME_ENGINE.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
       console.log("end player acting");
+    }
+  }
+};
+
+//############################################################
+
+export let ActorWanderer = {
+  META:{
+    mixinName: 'ActorWanderer',
+    mixinGroupName: 'Actor',
+    stateNamespace: '_ActorWanderer',
+    stateModel: {
+      baseActionDuration: 1000,
+      actingState: false,
+      currentActionDuration: 1000
+    },
+    init: function(template) {
+      SCHEDULER.add(this,true,U.randomInt(2,this.attr._ActorWanderer.baseActionDuration));
+    }
+  },
+  METHODS:{
+    getBaseActionDuration: function () {
+      return this.attr._ActorWanderer.baseActionDuration;
+    },
+    setBaseActionDuration: function (n) {
+      this.attr._ActorWanderer.baseActionDuration = n;
+    },
+    getCurrentActionDuration: function () {
+      return this.attr._ActorWanderer.currentActionDuration;
+    },
+    setCurrentActionDuration: function (n) {
+      this.attr._ActorWanderer.currentActionDuration = n;
+    },
+    isActing: function (state) {
+      if (state !== undefined) {
+        this.attr._ActorWanderer.actingState = state;
+      }
+      return this.attr._ActorWanderer.actingState;
+    },
+    act: function () {
+      if (this.isActing()) { return; } // a gate to deal with JS timing issues
+      this.isActing(true);
+      console.log("wanderer is acting");
+
+      // do wandering here
+      let dx = U.randomInt(-1,1);
+      let dy = U.randomInt(-1,1);
+      // console.log(`wandering attempting walk: ${dx},${dy}`);
+      if (dx != 0 || dy !=0) {
+        this.raiseMixinEvent('walkAttempt',{'dx':dx,'dy':dy});
+      }
+      // TIME_ENGINE.lock();
+      SCHEDULER.setDuration(this.getCurrentActionDuration());
+      this.setCurrentActionDuration(this.getBaseActionDuration()+U.randomInt(-5,5));
+      this.isActing(false);
+    }
+  },
+  LISTENERS:{
+    'actionDone': function(evtData) {
+      // TIME_ENGINE.unlock();
+      console.log("end wanderer acting");
     }
   }
 };
