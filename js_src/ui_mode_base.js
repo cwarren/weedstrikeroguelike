@@ -28,8 +28,8 @@ export class UIMode {
   render()      { console.log(`UIMode render - ${this.constructor.name}`); }
   renderAvatarOn(display) { return; }
   handleInput(inputType,inputData) { 
-    console.log(`UIMode handleInput - ${this.constructor.name}`);
-    UIMode.dumpInput(inputType,inputData);
+    // console.log(`UIMode handleInput - ${this.constructor.name}`);
+    // UIMode.dumpInput(inputType,inputData);
     // NOTE: returns true if the input caused any game play changes, false otherwise
     return false;
   }

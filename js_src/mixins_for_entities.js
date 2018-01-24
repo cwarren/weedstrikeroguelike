@@ -73,7 +73,7 @@ export let WalkerCorporeal = {
   },
   METHODS: {
     tryWalk: function(dx,dy) {
-      console.log(`${this.getName()} walking by ${dx},${dy}`);
+      // console.log(`${this.getName()} walking by ${dx},${dy}`);
       let newx = this.getx()+dx;
       let newy = this.gety()+dy;
       let md = this.getMap().getMapDataAt(newx,newy);
@@ -331,7 +331,7 @@ export let ActorPlayer = {
       TIME_ENGINE.lock();
       DATASTORE.GAME.render();
       this.isActing(false);
-      console.log("player is acting");
+      // console.log("player is acting");
     }
   },
   LISTENERS:{
@@ -340,7 +340,7 @@ export let ActorPlayer = {
       this.setCurrentActionDuration(this.getBaseActionDuration()+U.randomInt(-5,5));
       this.raiseMixinEvent('turnTaken',{timeUsed: 1});
       setTimeout(function() {TIME_ENGINE.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
-      console.log("end player acting");
+      // console.log("end player acting");
     }
   }
 };
@@ -400,7 +400,7 @@ export let ActorWanderer = {
   LISTENERS:{
     'actionDone': function(evtData) {
       // TIME_ENGINE.unlock();
-      console.log("end wanderer acting");
+      // console.log("end wanderer acting");
     }
   }
 };

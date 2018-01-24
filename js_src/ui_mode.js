@@ -113,6 +113,7 @@ export class UIModePersistence extends UIMode {
     let savedState = JSON.parse(serializedGameState);
     
     initializeDatastore();
+    initTiming();
     
     // restore game core
     DATASTORE.GAME = this.game;
@@ -172,6 +173,7 @@ export class UIModePlay extends UIMode {
     initializeDatastore();
     initTiming();
     DATASTORE.GAME = this.game;
+    console.log("new game datastore is");
     console.dir(DATASTORE);
     
     let av = EntityFactory.create('avatar');
