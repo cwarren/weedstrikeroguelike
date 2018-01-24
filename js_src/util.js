@@ -1,5 +1,6 @@
 // various generally useful functions
 
+import ROT from 'rot-js';
 import {DATASTORE} from './datastore.js';
 
 // get a string of random characters
@@ -18,6 +19,12 @@ export function uniqueId() {
   return `${DATASTORE.ID_SEQ}-${randomString()}`;
 }
 
+export function randomInt(min,max) {
+  let range = max - min;
+  let offset = Math.floor(ROT.RNG.getUniform()*(range+1));
+  return offset+min;
+}
+
 // create (and return) a 2D array that's been initialized with a given value
 export function init2DArray(x=1,y=1,initVal='') {
   var a = [];
@@ -30,6 +37,7 @@ export function init2DArray(x=1,y=1,initVal='') {
   return a;
 }
 
+// turn an array into a scalar by ||-ing all elements together
 export function collapseArrayByOr(ar) {
   let res = false;
   for (let i=0;i<ar.length;i++) {

@@ -1,8 +1,11 @@
+
+// chunks of functionality that can be added to entity instances
 import ROT from 'rot-js';
 import {Message} from './message.js';
 import * as U from './util.js';
+import {SCHEDULER,TIME_ENGINE} from './timing.js';
+import {DATASTORE} from './datastore.js';
 
-// chunks of functionality that can be added to entity instances
 
 let _exampleMixin = {
   META: {
@@ -75,7 +78,11 @@ export let WalkerCorporeal = {
       let md = this.getMap().getMapDataAt(newx,newy);
       if (md.entity) {
         let bumpRes = this.raiseMixinEvent('bumpEntity',{'target':md.entity});
-        return U.collapseArrayByOr(bumpRes.acted);
+        let tookAction = U.collapseArrayByOr(bumpRes.acted);
+        if (tookAction) {
+          this.raiseMixinEvent('actionDone');
+        }
+        return tookAction;
       }
       if (md.tile.isImpassable()) {
         this.raiseMixinEvent('movementBlocked',{'reasonBlocked':'the space is impassable'});
@@ -83,6 +90,7 @@ export let WalkerCorporeal = {
       }
       this.getMap().moveEntityTo(this,newx,newy);
       this.raiseMixinEvent('turnTaken',{'turnAction':'walk'});
+      this.raiseMixinEvent('actionDone');
       return true;
     }
   }
@@ -271,5 +279,60 @@ export let MeleeThorns = {
     }
   }
 }
+
+//############################################################
+
+export let ActorPlayer = {
+  META:{
+    mixinName: 'ActorPlayer',
+    mixinGroupName: 'Actor',
+    stateNamespace: '_ActorPlayer',
+    stateModel: {
+      baseActionDuration: 1000,
+      actingState: false,
+      currentActionDuration: 1000
+    },
+    init: function(template) {
+      SCHEDULER.add(this,true,1);
+    }
+  },
+  METHODS:{
+    getBaseActionDuration: function () {
+      return this.attr._ActorPlayer.baseActionDuration;
+    },
+    setBaseActionDuration: function (n) {
+      this.attr._ActorPlayer.baseActionDuration = n;
+    },
+    getCurrentActionDuration: function () {
+      return this.attr._ActorPlayer.currentActionDuration;
+    },
+    setCurrentActionDuration: function (n) {
+      this.attr._ActorPlayer.currentActionDuration = n;
+    },
+    isActing: function (state) {
+      if (state !== undefined) {
+        this.attr._ActorPlayer.actingState = state;
+      }
+      return this.attr._ActorPlayer.actingState;
+    },
+    act: function () {
+      if (this.isActing()) { return; } // a gate to deal with JS timing issues
+      this.isActing(true);
+      TIME_ENGINE.lock();
+      DATASTORE.GAME.render();
+      this.isActing(false);
+      console.log("player is acting");
+    }
+  },
+  LISTENERS:{
+    'actionDone': function(evtData) {
+      SCHEDULER.setDuration(this.getCurrentActionDuration());
+      this.setCurrentActionDuration(this.getBaseActionDuration()+U.randomInt(-5,5));
+      this.raiseMixinEvent('turnTaken',{timeUsed: 1});
+      setTimeout(function() {TIME_ENGINE.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
+      console.log("end player acting");
+    }
+  }
+};
 
 //############################################################

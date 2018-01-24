@@ -10,6 +10,7 @@ import {DisplaySymbol} from './display_symbol.js';
 import {DATASTORE,initializeDatastore} from './datastore.js';
 import {EntityFactory} from './entities.js';
 import {COMMAND,getCommandFromInput,setKeyBinding} from './commands.js';
+import {SCHEDULER,TIME_ENGINE,initTiming} from './timing.js';
 
 //-----------------------------------------------------
 //-----------------------------------------------------
@@ -157,12 +158,22 @@ export class UIModePlay extends UIMode {
   enter() {
     super.enter();
     this.game.isPlaying = true;
+    TIME_ENGINE.unlock();
+  }
+  exit() {
+    super.exit();
+    TIME_ENGINE.lock();
   }
   bindCommands() {
     setKeyBinding(['play','movement_numpad']);
   }
   
   startNewGame() {
+    initializeDatastore();
+    initTiming();
+    DATASTORE.GAME = this.game;
+    console.dir(DATASTORE);
+    
     let av = EntityFactory.create('avatar');
     this.cachedAvatar = av; // to have the avatar still available after it's been destroyed (e.g. when reduced to <= 0 hp)
     let m = makeMap({xdim:60,ydim:20});
@@ -180,16 +191,17 @@ export class UIModePlay extends UIMode {
     };
     
     // populate the map with some entities (will need a better general approach to this at some point)
-    let i=0;
-    while (i<10) {
-      let t = EntityFactory.getRandomTemplateName();
-      if (t != 'avatar') {
-        i++;
-        let e = EntityFactory.create(t);
-        e.setpos(m.getRandomUnblockedLocation());
-        m.addEntity(e);
-      }
-    }
+
+    // let i=0;
+    // while (i<10) {
+    //   let t = EntityFactory.getRandomTemplateName();
+    //   if (t != 'avatar') {
+    //     i++;
+    //     let e = EntityFactory.create(t);
+    //     e.setpos(m.getRandomUnblockedLocation());
+    //     m.addEntity(e);
+    //   }
+    // }
   }
   
   getAvatar() {

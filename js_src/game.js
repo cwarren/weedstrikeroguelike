@@ -5,6 +5,7 @@ import * as U from './util.js';
 import {Message} from './message.js';
 import {UIModeLaunch, UIModePersistence, UIModePlay, UIModeMessages, UIModeWin, UIModeLose} from './ui_mode.js';
 import {DATASTORE, initializeDatastore} from './datastore.js';
+import {initTiming} from './timing.js';
 
 console.log('ROT is:');
 console.dir(ROT);
@@ -86,8 +87,6 @@ export let Game = {
 
   startNewGame: function() {
     console.log("starting new game");
-    initializeDatastore();
-    DATASTORE.GAME = this;
     this._mode.play.startNewGame();
   },
 

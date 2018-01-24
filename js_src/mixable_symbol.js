@@ -76,8 +76,8 @@ export class MixableSymbol extends DisplaySymbol {
   // returns a table of results from all handlers of the event
   /*
   {
-    keyA: [vA,vB],
-    keyB: [foo,bar,baz]
+    additiveMod: [1,4,-2],
+    multMod: [1.3]
   }
   */
   raiseMixinEvent(evtLabel,evtData) {

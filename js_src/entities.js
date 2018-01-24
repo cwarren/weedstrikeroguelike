@@ -13,7 +13,7 @@ EntityFactory.learn({
   maxHp: 10,
   meleeHit: 3,
   meleeDamage: 2,
-  mixins: ["PlayerMessager","WalkerCorporeal","TimeTracker","KillTracker","HitPoints","MeleeAttacker"]
+  mixins: ["ActorPlayer","PlayerMessager","WalkerCorporeal","TimeTracker","KillTracker","HitPoints","MeleeAttacker"]
 });
 
 EntityFactory.learn({
